@@ -74,7 +74,6 @@ export function EpochPage() {
                   />,
                 ]
               : null,
-            e.staged_at_block ? ['Staged at block', formatUint(e.staged_at_block)] : null,
             ['Created', formatDate(e.created_at)],
             ['Updated', formatDate(e.updated_at)],
           ]}

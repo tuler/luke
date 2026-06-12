@@ -26,7 +26,7 @@ export interface GetResult<T> {
   data: T
 }
 
-export type ApplicationStatus = 'OK' | 'FAILED' | 'DIVERGED' | 'CORRUPTED'
+export type ApplicationState = 'ENABLED' | 'DISABLED' | 'FAILED' | 'INOPERABLE'
 
 export type ConsensusType = 'AUTHORITY' | 'QUORUM' | 'PRT'
 
@@ -36,10 +36,8 @@ export type EpochStatus =
   | 'INPUTS_PROCESSED'
   | 'CLAIM_COMPUTED'
   | 'CLAIM_SUBMITTED'
-  | 'CLAIM_STAGED'
   | 'CLAIM_ACCEPTED'
   | 'CLAIM_REJECTED'
-  | 'CLAIM_FORECLOSED'
 
 export const EPOCH_STATUSES: EpochStatus[] = [
   'OPEN',
@@ -47,10 +45,8 @@ export const EPOCH_STATUSES: EpochStatus[] = [
   'INPUTS_PROCESSED',
   'CLAIM_COMPUTED',
   'CLAIM_SUBMITTED',
-  'CLAIM_STAGED',
   'CLAIM_ACCEPTED',
   'CLAIM_REJECTED',
-  'CLAIM_FORECLOSED',
 ]
 
 export type InputCompletionStatus =
@@ -69,14 +65,6 @@ export type SnapshotPolicy = 'NONE' | 'EVERY_INPUT' | 'EVERY_EPOCH'
 export type WinnerCommitment = 'NONE' | 'ONE' | 'TWO'
 
 export type MatchDeletionReason = 'STEP' | 'TIMEOUT' | 'CHILD_TOURNAMENT' | 'NOT_DELETED'
-
-export interface WithdrawalConfig {
-  guardian: Address
-  log2_leaves_per_account: HexUint
-  log2_max_num_of_accounts: HexUint
-  accounts_drive_start_index: HexUint
-  withdrawal_output_builder: Address
-}
 
 export interface ExecutionParameters {
   snapshot_policy: SnapshotPolicy
@@ -103,27 +91,16 @@ export interface Application {
   iinputbox_address: Address
   template_hash: Hash
   epoch_length: HexUint
-  claim_staging_period: HexUint
-  withdrawal_config: WithdrawalConfig
   data_availability: ByteArray
   consensus_type: ConsensusType
-  enabled: boolean
-  status: ApplicationStatus
+  state: ApplicationState
   reason: string | null
   iinputbox_block: HexUint
   last_epoch_check_block: HexUint
   last_input_check_block: HexUint
   last_output_check_block: HexUint
   last_tournament_check_block: HexUint
-  last_foreclose_check_block: HexUint
-  last_accounts_drive_proved_check_block: HexUint
-  last_withdrawal_check_block: HexUint
   processed_inputs: HexUint
-  foreclose_block: HexUint
-  foreclose_transaction: Hash
-  accounts_drive_proved_block: HexUint
-  accounts_drive_proved_transaction: Hash
-  accounts_drive_merkle_root: Hash
   created_at: string
   updated_at: string
   execution_parameters: ExecutionParameters
@@ -143,7 +120,6 @@ export interface Epoch {
   claim_transaction_hash: Hash | null
   tournament_address: Address | null
   status: EpochStatus
-  staged_at_block: HexUint | null
   virtual_index: HexUint
   created_at: string
   updated_at: string
@@ -202,17 +178,6 @@ export interface Report {
   input_index: HexUint
   index: HexUint
   raw_data: ByteArray
-  created_at: string
-  updated_at: string
-}
-
-export interface Withdrawal {
-  account_index: HexUint
-  account: ByteArray
-  output: ByteArray
-  block_number: HexUint
-  transaction_hash: Hash
-  log_index: HexUint
   created_at: string
   updated_at: string
 }

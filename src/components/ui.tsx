@@ -56,21 +56,19 @@ export function Hex({
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  // application
-  OK: 'bg-emerald-100 text-emerald-800',
+  // application state
+  ENABLED: 'bg-emerald-100 text-emerald-800',
+  DISABLED: 'bg-slate-200 text-slate-700',
   FAILED: 'bg-red-100 text-red-800',
-  DIVERGED: 'bg-red-100 text-red-800',
-  CORRUPTED: 'bg-red-100 text-red-800',
+  INOPERABLE: 'bg-red-100 text-red-800',
   // epoch
   OPEN: 'bg-sky-100 text-sky-800',
   CLOSED: 'bg-slate-200 text-slate-700',
   INPUTS_PROCESSED: 'bg-indigo-100 text-indigo-800',
   CLAIM_COMPUTED: 'bg-violet-100 text-violet-800',
   CLAIM_SUBMITTED: 'bg-amber-100 text-amber-800',
-  CLAIM_STAGED: 'bg-amber-100 text-amber-800',
   CLAIM_ACCEPTED: 'bg-emerald-100 text-emerald-800',
   CLAIM_REJECTED: 'bg-red-100 text-red-800',
-  CLAIM_FORECLOSED: 'bg-red-100 text-red-800',
   // input
   NONE: 'bg-slate-200 text-slate-700',
   ACCEPTED: 'bg-emerald-100 text-emerald-800',

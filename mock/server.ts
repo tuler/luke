@@ -25,14 +25,6 @@ const executionParameters = {
   updated_at: now(5),
 }
 
-const zeroWithdrawalConfig = {
-  guardian: '0x' + '0'.repeat(40),
-  log2_leaves_per_account: '0x0',
-  log2_max_num_of_accounts: '0x0',
-  accounts_drive_start_index: '0x0',
-  withdrawal_output_builder: '0x' + '0'.repeat(40),
-}
-
 const apps = [
   {
     name: 'echo-dapp',
@@ -41,27 +33,16 @@ const apps = [
     iinputbox_address: addr(3),
     template_hash: hash(1),
     epoch_length: hex(720),
-    claim_staging_period: hex(60),
-    withdrawal_config: zeroWithdrawalConfig,
     data_availability: '0xdeadbeef',
     consensus_type: 'AUTHORITY',
-    enabled: true,
-    status: 'OK',
+    state: 'ENABLED',
     reason: null,
     iinputbox_block: hex(100),
     last_epoch_check_block: hex(5000),
     last_input_check_block: hex(5000),
     last_output_check_block: hex(4990),
     last_tournament_check_block: hex(0),
-    last_foreclose_check_block: hex(5000),
-    last_accounts_drive_proved_check_block: hex(0),
-    last_withdrawal_check_block: hex(0),
     processed_inputs: hex(42),
-    foreclose_block: hex(0),
-    foreclose_transaction: '0x' + '0'.repeat(64),
-    accounts_drive_proved_block: hex(0),
-    accounts_drive_proved_transaction: '0x' + '0'.repeat(64),
-    accounts_drive_merkle_root: '0x' + '0'.repeat(64),
     created_at: now(20000),
     updated_at: now(2),
     execution_parameters: executionParameters,
@@ -73,33 +54,16 @@ const apps = [
     iinputbox_address: addr(3),
     template_hash: hash(2),
     epoch_length: hex(1440),
-    claim_staging_period: hex(120),
-    withdrawal_config: {
-      guardian: addr(20),
-      log2_leaves_per_account: hex(2),
-      log2_max_num_of_accounts: hex(16),
-      accounts_drive_start_index: hex(4),
-      withdrawal_output_builder: addr(21),
-    },
     data_availability: '0xcafebabe',
     consensus_type: 'PRT',
-    enabled: false,
-    status: 'OK',
+    state: 'DISABLED',
     reason: null,
     iinputbox_block: hex(200),
     last_epoch_check_block: hex(6000),
     last_input_check_block: hex(6000),
     last_output_check_block: hex(6000),
     last_tournament_check_block: hex(6000),
-    last_foreclose_check_block: hex(6000),
-    last_accounts_drive_proved_check_block: hex(6100),
-    last_withdrawal_check_block: hex(6200),
     processed_inputs: hex(7),
-    foreclose_block: hex(5800),
-    foreclose_transaction: hash(50),
-    accounts_drive_proved_block: hex(5900),
-    accounts_drive_proved_transaction: hash(51),
-    accounts_drive_merkle_root: hash(52),
     created_at: now(30000),
     updated_at: now(1),
     execution_parameters: executionParameters,
@@ -129,7 +93,6 @@ const epochs = EPOCH_STATUSES.map((status, i) => ({
   claim_transaction_hash: status.startsWith('CLAIM') ? hash(160 + i) : null,
   tournament_address: i === 2 ? addr(30) : null,
   status,
-  staged_at_block: status === 'CLAIM_ACCEPTED' ? hex(900 + i) : null,
   virtual_index: hex(i),
   created_at: now(10000 - i * 1000),
   updated_at: now(100 - i * 10),
@@ -192,17 +155,6 @@ const reports = Array.from({ length: 12 }, (_, i) => ({
   raw_data: i % 2 === 0 ? utf8(`error: insufficient balance for request ${i}`) : '0x' + 'ee'.repeat(32),
   created_at: now(3000 - i * 100),
   updated_at: now(300 - i * 10),
-}))
-
-const withdrawals = Array.from({ length: 5 }, (_, i) => ({
-  account_index: hex(i),
-  account: addr(90 + i).toLowerCase(),
-  output: '0x237a816f' + 'aa'.repeat(48),
-  block_number: hex(5950 + i),
-  transaction_hash: hash(600 + i),
-  log_index: hex(i),
-  created_at: now(100 - i * 5),
-  updated_at: now(100 - i * 5),
 }))
 
 const tournaments = [
@@ -388,20 +340,6 @@ const methods: Record<string, (params: Params) => unknown> = {
     const report = reports.find((r) => eq(r.index, p.report_index))
     if (!report) throw { code: -32001, message: 'report not found' }
     return { data: report }
-  },
-  cartesi_listWithdrawals: (p) => {
-    const app = requireApp(p)
-    const rows = app.name === 'honeypot' ? withdrawals : []
-    return paginate(
-      rows.filter((w) => p.account_index == null || eq(w.account_index, p.account_index)),
-      p,
-    )
-  },
-  cartesi_getWithdrawal: (p) => {
-    requireApp(p)
-    const withdrawal = withdrawals.find((w) => eq(w.account_index, p.account_index))
-    if (!withdrawal) throw { code: -32001, message: 'withdrawal not found' }
-    return { data: withdrawal }
   },
   cartesi_listTournaments: (p) => {
     const app = requireApp(p)

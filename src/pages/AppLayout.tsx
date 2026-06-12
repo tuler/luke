@@ -6,7 +6,6 @@ import {
   useOutputs,
   useReports,
   useTournaments,
-  useWithdrawals,
 } from '../api/hooks'
 import type { Application } from '../api/types'
 import { Crumbs, ErrorBox, Hex, Spinner, StatusBadge } from '../components/ui'
@@ -55,7 +54,6 @@ export function AppLayout() {
   const outputs = useOutputs(app, {}, peek)
   const reports = useReports(app, {}, peek)
   const tournaments = useTournaments(app, {}, peek)
-  const withdrawals = useWithdrawals(app, {}, peek)
 
   if (result.isLoading) return <Spinner label={`Loading application ${app}…`} />
   if (result.error) {
@@ -77,13 +75,8 @@ export function AppLayout() {
       <div className="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <h1 className="text-lg font-semibold text-slate-800">{application.name}</h1>
-          <StatusBadge status={application.status} />
+          <StatusBadge status={application.state} />
           <StatusBadge status={application.consensus_type} />
-          {!application.enabled && (
-            <span className="rounded-full bg-slate-200 px-2 py-0.5 text-[11px] font-semibold text-slate-600">
-              DISABLED
-            </span>
-          )}
           <Hex value={application.iapplication_address} full />
         </div>
         {application.reason && (
@@ -109,11 +102,6 @@ export function AppLayout() {
             to={`${base}/tournaments`}
             label="Tournaments"
             count={tournaments.data?.pagination.total_count}
-          />
-          <Tab
-            to={`${base}/withdrawals`}
-            label="Withdrawals"
-            count={withdrawals.data?.pagination.total_count}
           />
         </nav>
       </div>

@@ -14,8 +14,6 @@ import { ReportPage } from './pages/ReportPage'
 import { ReportsPage } from './pages/ReportsPage'
 import { TournamentPage } from './pages/TournamentPage'
 import { TournamentsPage } from './pages/TournamentsPage'
-import { WithdrawalPage } from './pages/WithdrawalPage'
-import { WithdrawalsPage } from './pages/WithdrawalsPage'
 
 export default function App() {
   return (
@@ -32,8 +30,6 @@ export default function App() {
           <Route path="outputs/:outputIndex" element={<OutputPage />} />
           <Route path="reports" element={<ReportsPage />} />
           <Route path="reports/:reportIndex" element={<ReportPage />} />
-          <Route path="withdrawals" element={<WithdrawalsPage />} />
-          <Route path="withdrawals/:accountIndex" element={<WithdrawalPage />} />
           <Route path="tournaments" element={<TournamentsPage />} />
           <Route path="tournaments/:address" element={<TournamentPage />} />
           <Route

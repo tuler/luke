@@ -22,16 +22,7 @@ export function ApplicationsPage() {
             },
             { header: 'Address', cell: (app) => <Hex value={app.iapplication_address} /> },
             { header: 'Consensus', cell: (app) => <StatusBadge status={app.consensus_type} /> },
-            { header: 'Status', cell: (app) => <StatusBadge status={app.status} /> },
-            {
-              header: 'Enabled',
-              cell: (app) =>
-                app.enabled ? (
-                  <span className="text-emerald-600">yes</span>
-                ) : (
-                  <span className="text-slate-400">no</span>
-                ),
-            },
+            { header: 'State', cell: (app) => <StatusBadge status={app.state} /> },
             {
               header: 'Inputs',
               align: 'right',

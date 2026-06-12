@@ -1,6 +1,6 @@
 # Cartesi Node Explorer
 
-A web UI for navigating the entities exposed by the [Cartesi Rollups Node JSON-RPC API](https://github.com/cartesi/rollups-node) (v2.0.0). It follows the natural hierarchy of the API:
+A web UI for navigating the entities exposed by the [Cartesi Rollups Node JSON-RPC API](https://github.com/cartesi/rollups-node) (v2.0.0, current alpha release). It follows the natural hierarchy of the API:
 
 ```
 Node
@@ -9,9 +9,8 @@ Node
     ├── Inputs ──────────────► Outputs · Reports (per input)
     ├── Outputs (Notice / Voucher / DelegateCallVoucher, decoded)
     ├── Reports
-    ├── Tournaments (PRT) ───► Commitments · Matches ─► Match advances
-    │                          └── Child tournaments (recursive)
-    └── Withdrawals (post-foreclosure)
+    └── Tournaments (PRT) ───► Commitments · Matches ─► Match advances
+                               └── Child tournaments (recursive)
 ```
 
 Every list is paginated, sortable, and filterable (epoch, input, sender, output type, voucher address, status, …), and filters are kept in the URL so any view is shareable. Detail pages cross-link related entities — e.g. an epoch links to its inputs, an input to the outputs and reports it produced, an epoch under dispute to its tournament.
@@ -37,7 +36,7 @@ Enter the node's JSON-RPC URL in the top bar (default: `http://localhost:10011/r
 
 ### Mock server
 
-A mock node with sample data (two applications, epochs, inputs, decoded outputs, a PRT tournament tree, and a foreclosed application with withdrawals) is included for UI development:
+A mock node with sample data (two applications, epochs, inputs, decoded outputs, and a PRT tournament tree) is included for UI development:
 
 ```sh
 bun mock/server.ts   # serves http://localhost:10011/rpc with CORS enabled
