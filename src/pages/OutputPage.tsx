@@ -7,7 +7,7 @@ import { useApp } from './AppLayout'
 import { outputTypeLabel } from './OutputsPage'
 
 export function OutputPage() {
-  const { appParam } = useApp()
+  const { appParam, application } = useApp()
   const { outputIndex = '0' } = useParams()
   const output = useOutput(appParam, decimalToHex(outputIndex))
 
@@ -75,7 +75,13 @@ export function OutputPage() {
                 ? ['Destination', <Hex value={decoded.destination} full />]
                 : null,
               decoded.value !== undefined ? ['Value', formatWei(decoded.value)] : null,
-              ['Payload', <PayloadView value={decoded.payload} />],
+              [
+                'Payload',
+                <PayloadView
+                  value={decoded.payload}
+                  decode={{ application: application.iapplication_address, kind: 'output', record: o }}
+                />,
+              ],
             ]}
           />
         </Section>

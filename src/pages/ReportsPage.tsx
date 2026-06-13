@@ -10,7 +10,7 @@ export function ReportsPage() {
   const { searchParams, limit, offset, descending, update } = useListControls()
   const epoch = searchParams.get('epoch') ?? ''
   const input = searchParams.get('input') ?? ''
-  const { appParam } = useApp()
+  const { appParam, application } = useApp()
 
   const reports = useReports(
     appParam,
@@ -84,7 +84,16 @@ export function ReportsPage() {
             align: 'right',
             cell: (r) => `${hexByteLength(r.raw_data).toLocaleString()} B`,
           },
-          { header: 'Payload', cell: (r) => <PayloadPreview value={r.raw_data} max={48} /> },
+          {
+            header: 'Payload',
+            cell: (r) => (
+              <PayloadPreview
+                value={r.raw_data}
+                max={48}
+                decode={{ application: application.iapplication_address, kind: 'report', record: r }}
+              />
+            ),
+          },
         ]}
         rows={reports.data?.data}
         rowKey={(r) => r.index}

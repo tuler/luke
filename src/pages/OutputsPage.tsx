@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useOutputs } from '../api/hooks'
 import { OUTPUT_TYPES } from '../api/types'
 import { DataTable, Filter, filterInputClass, Pager, SortToggle, useListControls } from '../components/table'
+import { PayloadPreview } from '../components/PayloadView'
 import { Hex, Section } from '../components/ui'
 import { decimalToHex, formatUint, uintToDecimal } from '../lib/format'
 import { useApp } from './AppLayout'
@@ -17,7 +18,7 @@ export function OutputsPage() {
   const input = searchParams.get('input') ?? ''
   const type = searchParams.get('type') ?? ''
   const voucher = searchParams.get('voucher') ?? ''
-  const { appParam } = useApp()
+  const { appParam, application } = useApp()
 
   const outputs = useOutputs(
     appParam,
@@ -120,6 +121,15 @@ export function OutputsPage() {
             ),
           },
           { header: 'Destination', cell: (o) => <Hex value={o.decoded_data?.destination} /> },
+          {
+            header: 'Payload',
+            cell: (o) => (
+              <PayloadPreview
+                value={o.decoded_data?.payload}
+                decode={{ application: application.iapplication_address, kind: 'output', record: o }}
+              />
+            ),
+          },
           {
             header: 'Executed',
             cell: (o) =>

@@ -1,4 +1,5 @@
 import { useLastAcceptedEpochIndex, useProcessedInputCount } from '../api/hooks'
+import { DecoderSettings } from '../components/DecoderSettings'
 import { Collapsible, Hex, JsonView, KV, Section, StatusBadge } from '../components/ui'
 import { formatDate, formatNanos, formatUint } from '../lib/format'
 import { useApp } from './AppLayout'
@@ -86,6 +87,8 @@ export function AppOverview() {
           )}
         </Section>
       </div>
+
+      <DecoderSettings key={app.iapplication_address} application={app.iapplication_address} />
 
       <Collapsible label="Raw JSON">
         <JsonView value={app} />

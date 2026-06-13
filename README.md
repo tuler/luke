@@ -56,3 +56,39 @@ bun mock/server.ts   # serves http://localhost:10011/rpc with CORS enabled
 bun run build        # type-checks and bundles into dist/
 bun run preview
 ```
+
+## Payload decoders
+
+Input, output and report payloads are application-specific byte arrays — opaque to the node, and therefore to the explorer, which by default shows them as hex (or UTF-8 when they happen to be text). To make them readable, you can plug in a decoder: an ES module, hosted anywhere, registered per application on the app's **Overview** page. The explorer imports it at runtime — no rebuild needed — and uses it for that application's payload views and table previews, with the raw hex/UTF-8 views still available as toggles. Decoders are stored in localStorage, keyed by application address.
+
+A decoder module implements this interface (version 1):
+
+```js
+export const version = 1          // required
+export const name = 'My decoder'  // optional, shown in the UI
+
+// Called for every payload of the application. May be async.
+// Return null/undefined when the payload is not recognized — the explorer
+// falls back to its hex/UTF-8 view. Same when decode() throws.
+export function decode(payload, context) {
+  // payload: hex byte string, e.g. "0x7b22…"
+  // context: {
+  //   kind: 'input' | 'output' | 'report',
+  //   application: '0x…',  // application contract address (lowercase)
+  //   chainId?: number,    // chain id of the connected node
+  //   record?: object,     // the full API record the payload belongs to
+  // }
+  return {
+    summary: 'transfer · amount 120',           // one line, shown in tables
+    data: { action: 'transfer', amount: 120 },  // detail view: string → text,
+  }                                             //   object/array → JSON
+}
+```
+
+See [`examples/decoder.js`](examples/decoder.js) for a working example. The mock server serves it at `http://localhost:10011/decoder.js` — register that URL on an application's Overview page to try the full loop.
+
+Requirements and caveats:
+
+- The URL must serve a JavaScript ES module with CORS enabled (`Access-Control-Allow-Origin`).
+- When the explorer is served over HTTPS (e.g. GitHub Pages), browsers block `http://` module URLs — use `https://`, or run the explorer locally.
+- **A decoder runs with full access to the explorer page. Only register URLs you trust.** Decoders are never adopted from shared links.
