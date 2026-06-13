@@ -9,6 +9,7 @@ import {
 } from '../api/hooks'
 import type { Application } from '../api/types'
 import { Crumbs, ErrorBox, Hex, Spinner, StatusBadge } from '../components/ui'
+import { DecoderUrlSync } from '../decoder/registry'
 
 export interface AppContext {
   /** Route param: application name or address, used in API calls and links. */
@@ -105,6 +106,8 @@ export function AppLayout() {
           />
         </nav>
       </div>
+
+      <DecoderUrlSync application={application.iapplication_address} />
 
       <Outlet context={{ appParam: app, application } satisfies AppContext} />
     </div>
