@@ -87,8 +87,14 @@ export function decode(payload, context) {
 
 See [`examples/decoder.js`](examples/decoder.js) for a working example. The mock server serves it at `http://localhost:10011/decoder.js` — register that URL on an application's Overview page to try the full loop.
 
+On application pages the registered decoder is mirrored into a `?decoder=` query param, so the address bar is a shareable link that carries the decoder along with the node, e.g.:
+
+```
+https://tuler.github.io/luke/apps/echo-dapp/inputs?server=…&decoder=https://example.com/decoder.js
+```
+
 Requirements and caveats:
 
 - The URL must serve a JavaScript ES module with CORS enabled (`Access-Control-Allow-Origin`).
 - When the explorer is served over HTTPS (e.g. GitHub Pages), browsers block `http://` module URLs — use `https://`, or run the explorer locally.
-- **A decoder runs with full access to the explorer page. Only register URLs you trust.** Decoders are never adopted from shared links.
+- **A decoder runs with full access to the explorer page. Only register URLs you trust.** Unlike `?server=`, a decoder suggested by a shared link is never adopted silently — a banner asks for confirmation first.
