@@ -32,6 +32,14 @@ bun dev          # http://localhost:5173
 
 Enter the node's JSON-RPC URL in the top bar (default: `http://localhost:10011/rpc`). The URL is persisted in localStorage. The green/red dot shows connectivity, along with the node's chain ID and version. The sun/moon button toggles dark mode (defaults to the OS preference, persisted in localStorage).
 
+The active server is also mirrored into a `?server=` query param on every page, so the address bar is always a shareable link that pins the node, e.g.:
+
+```
+https://tuler.github.io/luke/?server=https://my-node.example.com/rpc
+```
+
+Opening such a link adopts that server (and saves it as the new default).
+
 > **CORS:** the browser calls the node directly, so the node must allow the explorer's origin. Set `CARTESI_JSONRPC_API_CORS_ALLOWED_ORIGINS` on the node (e.g. `*` for local development).
 
 ### Mock server
