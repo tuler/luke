@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom'
 import { useInput } from '../api/hooks'
 import { PayloadView } from '../components/PayloadView'
 import { Collapsible, Crumbs, ErrorBox, Hex, JsonView, KV, Section, Spinner, StatusBadge } from '../components/ui'
+import { TxHash } from '../components/TxHash'
 import { decimalToHex, formatDate, formatUint, hexToBigInt, uintToDecimal } from '../lib/format'
 import { useApp } from './AppLayout'
 
@@ -49,7 +50,7 @@ export function InputPage() {
             ['Block number', formatUint(i.block_number)],
             ['Machine hash', <Hex value={i.machine_hash} full />],
             ['Outputs hash', <Hex value={i.outputs_hash} full />],
-            ['Transaction reference', <Hex value={i.transaction_reference} full />],
+            ['Transaction reference', <TxHash value={i.transaction_reference} full />],
             ['Created', formatDate(i.created_at)],
             ['Updated', formatDate(i.updated_at)],
           ]}

@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom'
 import { useOutput } from '../api/hooks'
 import { PayloadView } from '../components/PayloadView'
 import { Collapsible, Crumbs, ErrorBox, Hex, JsonView, KV, Section, Spinner } from '../components/ui'
+import { TxHash } from '../components/TxHash'
 import { decimalToHex, formatDate, formatUint, formatWei, uintToDecimal } from '../lib/format'
 import { useApp } from './AppLayout'
 import { outputTypeLabel } from './OutputsPage'
@@ -59,7 +60,7 @@ export function OutputPage() {
               </Link>,
             ],
             ['Hash', <Hex value={o.hash} full />],
-            ['Execution transaction', <Hex value={o.execution_transaction_hash} full />],
+            ['Execution transaction', <TxHash value={o.execution_transaction_hash} full />],
             ['Created', formatDate(o.created_at)],
             ['Updated', formatDate(o.updated_at)],
           ]}

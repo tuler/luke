@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom'
 import { useMatch, useMatchAdvances } from '../api/hooks'
 import { DataTable, Pager, useListControls } from '../components/table'
 import { Collapsible, Crumbs, ErrorBox, Hex, JsonView, KV, Section, Spinner, StatusBadge } from '../components/ui'
+import { TxHash } from '../components/TxHash'
 import { decimalToHex, formatDate, formatUint, isZeroHex, shortHex, uintToDecimal } from '../lib/format'
 import { useApp } from './AppLayout'
 
@@ -59,13 +60,13 @@ export function MatchPage() {
             ['Left of two', <Hex value={m.left_of_two} full />],
             ['Winner', <StatusBadge status={m.winner_commitment} />],
             ['Created at block', formatUint(m.block_number)],
-            ['Creation tx', <Hex value={m.tx_hash} full />],
+            ['Creation tx', <TxHash value={m.tx_hash} full />],
             ['Resolution', <StatusBadge status={m.deletion_reason} />],
             deleted && !isZeroHex(m.deletion_block_number)
               ? ['Resolved at block', formatUint(m.deletion_block_number)]
               : null,
             deleted && !isZeroHex(m.deletion_tx_hash)
-              ? ['Resolution tx', <Hex value={m.deletion_tx_hash} full />]
+              ? ['Resolution tx', <TxHash value={m.deletion_tx_hash} full />]
               : null,
             ['Created', formatDate(m.created_at)],
             ['Updated', formatDate(m.updated_at)],
@@ -79,7 +80,7 @@ export function MatchPage() {
             { header: 'Other parent', cell: (a) => <Hex value={a.other_parent} /> },
             { header: 'Left node', cell: (a) => <Hex value={a.left_node} /> },
             { header: 'Block', align: 'right', cell: (a) => formatUint(a.block_number) },
-            { header: 'Tx', cell: (a) => <Hex value={a.tx_hash} /> },
+            { header: 'Tx', cell: (a) => <TxHash value={a.tx_hash} /> },
             { header: 'Observed', cell: (a) => formatDate(a.created_at) },
           ]}
           rows={advances.data?.data}

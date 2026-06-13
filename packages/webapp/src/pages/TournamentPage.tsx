@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom'
 import { useCommitments, useMatches, useTournament, useTournaments } from '../api/hooks'
 import { DataTable } from '../components/table'
 import { Collapsible, Crumbs, ErrorBox, Hex, JsonView, KV, Section, Spinner, StatusBadge } from '../components/ui'
+import { TxHash } from '../components/TxHash'
 import { formatDate, formatUint, isZeroHex, shortHex, uintToDecimal } from '../lib/format'
 import { useApp } from './AppLayout'
 
@@ -83,7 +84,7 @@ export function TournamentPage() {
             { header: 'Final state', cell: (c) => <Hex value={c.final_state_hash} /> },
             { header: 'Submitter', cell: (c) => <Hex value={c.submitter_address} /> },
             { header: 'Block', align: 'right', cell: (c) => formatUint(c.block_number) },
-            { header: 'Tx', cell: (c) => <Hex value={c.tx_hash} /> },
+            { header: 'Tx', cell: (c) => <TxHash value={c.tx_hash} /> },
           ]}
           rows={commitments.data?.data}
           rowKey={(c) => c.commitment}

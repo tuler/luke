@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 import { useEpoch } from '../api/hooks'
 import { Collapsible, Crumbs, ErrorBox, Hex, JsonView, KV, Section, Spinner, StatusBadge } from '../components/ui'
+import { TxHash } from '../components/TxHash'
 import { decimalToHex, formatDate, formatUint, hexToBigInt } from '../lib/format'
 import { useApp } from './AppLayout'
 
@@ -63,7 +64,7 @@ export function EpochPage() {
             ['Machine hash', <Hex value={e.machine_hash} full />],
             ['Outputs merkle root', <Hex value={e.outputs_merkle_root} full />],
             ['Commitment', <Hex value={e.commitment} full />],
-            ['Claim transaction', <Hex value={e.claim_transaction_hash} full />],
+            ['Claim transaction', <TxHash value={e.claim_transaction_hash} full />],
             e.tournament_address
               ? [
                   'Tournament',

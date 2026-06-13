@@ -11,12 +11,17 @@ export function Hex({
   tail = 6,
   full = false,
   to,
+  href,
+  hrefTitle = 'Open in block explorer',
 }: {
   value?: string | null
   head?: number
   tail?: number
   full?: boolean
   to?: string
+  /** When set, render an external-link button opening this URL in a new tab. */
+  href?: string
+  hrefTitle?: string
 }) {
   const [copied, setCopied] = useState(false)
   if (!value) return <span className="text-slate-400 dark:text-slate-500">—</span>
@@ -30,13 +35,16 @@ export function Hex({
     <span>{text}</span>
   )
 
+  const iconClass =
+    'text-slate-300 hover:text-slate-600 dark:text-slate-600 dark:hover:text-slate-300 cursor-pointer'
+
   return (
     <span className="inline-flex items-center gap-1 font-mono text-[13px] break-all" title={value}>
       {inner}
       <button
         type="button"
         aria-label="Copy"
-        className="text-slate-300 hover:text-slate-600 dark:text-slate-600 dark:hover:text-slate-300 cursor-pointer"
+        className={iconClass}
         onClick={(e) => {
           e.stopPropagation()
           navigator.clipboard.writeText(value)
@@ -53,6 +61,22 @@ export function Hex({
           </svg>
         )}
       </button>
+      {href && (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={hrefTitle}
+          title={hrefTitle}
+          className={iconClass}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M9 1a.5.5 0 0 0 0 1h3.793L7.146 7.646a.5.5 0 1 0 .708.708L13.5 2.707V6.5a.5.5 0 0 0 1 0v-5a.5.5 0 0 0-.5-.5H9Z" />
+            <path d="M3 3a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V9a.5.5 0 0 0-1 0v4a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h4a.5.5 0 0 0 0-1H3Z" />
+          </svg>
+        </a>
+      )}
     </span>
   )
 }
