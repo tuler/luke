@@ -31,7 +31,7 @@ export function ReportPage() {
             [
               'Epoch',
               <Link
-                className="text-sky-700 hover:underline"
+                className="text-sky-700 hover:underline dark:text-sky-400"
                 to={`${base}/epochs/${uintToDecimal(r.epoch_index)}`}
               >
                 {formatUint(r.epoch_index)}
@@ -40,7 +40,7 @@ export function ReportPage() {
             [
               'Input',
               <Link
-                className="text-sky-700 hover:underline"
+                className="text-sky-700 hover:underline dark:text-sky-400"
                 to={`${base}/inputs/${uintToDecimal(r.input_index)}`}
               >
                 {formatUint(r.input_index)}

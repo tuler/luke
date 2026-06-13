@@ -42,7 +42,7 @@ export function EpochsPage() {
           {
             header: 'Blocks',
             cell: (e) => (
-              <span className="text-slate-600">
+              <span className="text-slate-600 dark:text-slate-300">
                 {formatUint(e.first_block)} – {formatUint(e.last_block)}
               </span>
             ),
@@ -53,7 +53,7 @@ export function EpochsPage() {
               const lo = hexToBigInt(e.input_index_lower_bound)
               const hi = hexToBigInt(e.input_index_upper_bound)
               if (lo === null || hi === null || hi <= lo)
-                return <span className="text-slate-400">none</span>
+                return <span className="text-slate-400 dark:text-slate-500">none</span>
               return `${lo.toLocaleString()} – ${(hi - 1n).toLocaleString()}`
             },
           },

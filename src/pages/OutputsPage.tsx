@@ -92,7 +92,7 @@ export function OutputsPage() {
               <Link
                 to={`/apps/${appParam}/epochs/${uintToDecimal(o.epoch_index)}`}
                 onClick={(e) => e.stopPropagation()}
-                className="text-sky-700 hover:underline"
+                className="text-sky-700 hover:underline dark:text-sky-400"
               >
                 {formatUint(o.epoch_index)}
               </Link>
@@ -105,7 +105,7 @@ export function OutputsPage() {
               <Link
                 to={`/apps/${appParam}/inputs/${uintToDecimal(o.input_index)}`}
                 onClick={(e) => e.stopPropagation()}
-                className="text-sky-700 hover:underline"
+                className="text-sky-700 hover:underline dark:text-sky-400"
               >
                 {formatUint(o.input_index)}
               </Link>
@@ -114,7 +114,7 @@ export function OutputsPage() {
           {
             header: 'Type',
             cell: (o) => (
-              <span className="rounded bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-700">
+              <span className="rounded bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300">
                 {outputTypeLabel(o.decoded_data?.type)}
               </span>
             ),
@@ -124,9 +124,9 @@ export function OutputsPage() {
             header: 'Executed',
             cell: (o) =>
               o.execution_transaction_hash ? (
-                <span className="text-emerald-600">✓</span>
+                <span className="text-emerald-600 dark:text-emerald-400">✓</span>
               ) : (
-                <span className="text-slate-300">—</span>
+                <span className="text-slate-300 dark:text-slate-600">—</span>
               ),
           },
         ]}

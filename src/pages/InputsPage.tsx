@@ -59,7 +59,7 @@ export function InputsPage() {
               <Link
                 to={`/apps/${appParam}/epochs/${uintToDecimal(i.epoch_index)}`}
                 onClick={(e) => e.stopPropagation()}
-                className="text-sky-700 hover:underline"
+                className="text-sky-700 hover:underline dark:text-sky-400"
               >
                 {formatUint(i.epoch_index)}
               </Link>

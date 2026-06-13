@@ -3,6 +3,7 @@ import { Link, Outlet } from 'react-router-dom'
 import { useChainId, useNodeVersion } from '../api/hooks'
 import { formatUint } from '../lib/format'
 import { useServer } from '../server'
+import { useTheme } from '../theme'
 
 function ServerBar() {
   const { server, setServer } = useServer()
@@ -51,11 +52,34 @@ function ServerBar() {
   )
 }
 
+function ThemeToggle() {
+  const { theme, toggle } = useTheme()
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+      aria-label="Toggle dark mode"
+      className="grid h-8 w-8 shrink-0 place-items-center rounded-md text-slate-300 hover:bg-slate-800 hover:text-white cursor-pointer"
+    >
+      {theme === 'dark' ? (
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 11.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM8 0a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0v-1A.75.75 0 0 1 8 0Zm0 13.5a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0v-1A.75.75 0 0 1 8 13.5ZM16 8a.75.75 0 0 1-.75.75h-1a.75.75 0 0 1 0-1.5h1A.75.75 0 0 1 16 8ZM2.5 8a.75.75 0 0 1-.75.75h-1a.75.75 0 0 1 0-1.5h1A.75.75 0 0 1 2.5 8Zm10.97-5.47a.75.75 0 0 1 0 1.06l-.71.71a.75.75 0 1 1-1.06-1.06l.71-.71a.75.75 0 0 1 1.06 0ZM4.3 11.7a.75.75 0 0 1 0 1.06l-.71.71a.75.75 0 0 1-1.06-1.06l.71-.71a.75.75 0 0 1 1.06 0Zm9.17 1.77a.75.75 0 0 1-1.06 0l-.71-.71a.75.75 0 1 1 1.06-1.06l.71.71a.75.75 0 0 1 0 1.06ZM4.3 4.3a.75.75 0 0 1-1.06 0l-.71-.71a.75.75 0 0 1 1.06-1.06l.71.71a.75.75 0 0 1 0 1.06Z" />
+        </svg>
+      ) : (
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M6.2 1.1a.5.5 0 0 1 .1.55 6 6 0 0 0 8.05 8.05.5.5 0 0 1 .67.66A7 7 0 1 1 5.64.98a.5.5 0 0 1 .55.12Z" />
+        </svg>
+      )}
+    </button>
+  )
+}
+
 export function Layout() {
   return (
-    <div className="min-h-screen bg-slate-100">
-      <header className="bg-slate-900 text-white shadow">
-        <div className="mx-auto flex max-w-6xl items-center gap-6 px-4 py-3">
+    <div className="min-h-screen bg-slate-100 dark:bg-slate-950">
+      <header className="bg-slate-900 text-white shadow dark:border-b dark:border-slate-800">
+        <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3">
           <Link to="/" className="flex items-center gap-2 whitespace-nowrap">
             <span className="grid h-7 w-7 place-items-center rounded bg-sky-500 font-bold text-white">
               C
@@ -63,12 +87,13 @@ export function Layout() {
             <span className="font-semibold tracking-tight">Cartesi Node Explorer</span>
           </Link>
           <ServerBar />
+          <ThemeToggle />
         </div>
       </header>
       <main className="mx-auto max-w-6xl px-4 py-6">
         <Outlet />
       </main>
-      <footer className="mx-auto max-w-6xl px-4 pb-6 text-xs text-slate-400">
+      <footer className="mx-auto max-w-6xl px-4 pb-6 text-xs text-slate-400 dark:text-slate-600">
         Cartesi Rollups Node JSON-RPC API v2.0.0 — read-only explorer
       </footer>
     </div>

@@ -70,7 +70,7 @@ export function TournamentsPage() {
               <Link
                 to={`/apps/${appParam}/epochs/${uintToDecimal(t.epoch_index)}`}
                 onClick={(e) => e.stopPropagation()}
-                className="text-sky-700 hover:underline"
+                className="text-sky-700 hover:underline dark:text-sky-400"
               >
                 {formatUint(t.epoch_index)}
               </Link>
@@ -92,7 +92,7 @@ export function TournamentsPage() {
                   to={`/apps/${appParam}/tournaments/${t.parent_tournament_address}`}
                 />
               ) : (
-                <span className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-600">root</span>
+                <span className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-300">root</span>
               ),
           },
           {
@@ -101,7 +101,7 @@ export function TournamentsPage() {
               t.winner_commitment ? (
                 <Hex value={t.winner_commitment} />
               ) : (
-                <span className="text-slate-400">—</span>
+                <span className="text-slate-400 dark:text-slate-500">—</span>
               ),
           },
         ]}

@@ -39,7 +39,7 @@ export function InputPage() {
             [
               'Epoch',
               <Link
-                className="text-sky-700 hover:underline"
+                className="text-sky-700 hover:underline dark:text-sky-400"
                 to={`${base}/epochs/${uintToDecimal(i.epoch_index)}`}
               >
                 {formatUint(i.epoch_index)}
@@ -81,13 +81,13 @@ export function InputPage() {
         <div className="flex flex-wrap gap-2">
           <Link
             to={`${base}/outputs?input=${inputIndex}`}
-            className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-sky-700 hover:bg-sky-50"
+            className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-sky-700 hover:bg-sky-50 dark:border-slate-700 dark:bg-slate-900 dark:text-sky-400 dark:hover:bg-slate-800"
           >
             Outputs →
           </Link>
           <Link
             to={`${base}/reports?input=${inputIndex}`}
-            className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-sky-700 hover:bg-sky-50"
+            className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-sky-700 hover:bg-sky-50 dark:border-slate-700 dark:bg-slate-900 dark:text-sky-400 dark:hover:bg-slate-800"
           >
             Reports →
           </Link>

@@ -30,7 +30,7 @@ bun install
 bun dev          # http://localhost:5173
 ```
 
-Enter the node's JSON-RPC URL in the top bar (default: `http://localhost:10011/rpc`). The URL is persisted in localStorage. The green/red dot shows connectivity, along with the node's chain ID and version.
+Enter the node's JSON-RPC URL in the top bar (default: `http://localhost:10011/rpc`). The URL is persisted in localStorage. The green/red dot shows connectivity, along with the node's chain ID and version. The sun/moon button toggles dark mode (defaults to the OS preference, persisted in localStorage).
 
 > **CORS:** the browser calls the node directly, so the node must allow the explorer's origin. Set `CARTESI_JSONRPC_API_CORS_ALLOWED_ORIGINS` on the node (e.g. `*` for local development).
 

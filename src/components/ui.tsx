@@ -2,6 +2,8 @@ import { useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { shortHex } from '../lib/format'
 
+export const linkClass = 'text-sky-700 hover:underline dark:text-sky-400'
+
 /** Monospace hex value with middle truncation and click-to-copy. */
 export function Hex({
   value,
@@ -17,11 +19,11 @@ export function Hex({
   to?: string
 }) {
   const [copied, setCopied] = useState(false)
-  if (!value) return <span className="text-slate-400">—</span>
+  if (!value) return <span className="text-slate-400 dark:text-slate-500">—</span>
 
   const text = full ? value : shortHex(value, head, tail)
   const inner = to ? (
-    <Link to={to} className="text-sky-700 hover:underline">
+    <Link to={to} className={linkClass}>
       {text}
     </Link>
   ) : (
@@ -34,7 +36,7 @@ export function Hex({
       <button
         type="button"
         aria-label="Copy"
-        className="text-slate-300 hover:text-slate-600 cursor-pointer"
+        className="text-slate-300 hover:text-slate-600 dark:text-slate-600 dark:hover:text-slate-300 cursor-pointer"
         onClick={(e) => {
           e.stopPropagation()
           navigator.clipboard.writeText(value)
@@ -43,7 +45,7 @@ export function Hex({
         }}
       >
         {copied ? (
-          <span className="text-emerald-600 text-xs">✓</span>
+          <span className="text-emerald-600 dark:text-emerald-400 text-xs">✓</span>
         ) : (
           <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
             <path d="M4 2a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V2Zm2-.5a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h6a.5.5 0 0 0 .5-.5V2a.5.5 0 0 0-.5-.5H6Z" />
@@ -55,42 +57,53 @@ export function Hex({
   )
 }
 
+const GREEN = 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300'
+const RED = 'bg-red-100 text-red-800 dark:bg-red-500/15 dark:text-red-300'
+const GRAY = 'bg-slate-200 text-slate-700 dark:bg-slate-700/50 dark:text-slate-300'
+const BLUE = 'bg-sky-100 text-sky-800 dark:bg-sky-500/15 dark:text-sky-300'
+const INDIGO = 'bg-indigo-100 text-indigo-800 dark:bg-indigo-500/15 dark:text-indigo-300'
+const VIOLET = 'bg-violet-100 text-violet-800 dark:bg-violet-500/15 dark:text-violet-300'
+const AMBER = 'bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300'
+
 const STATUS_COLORS: Record<string, string> = {
   // application state
-  ENABLED: 'bg-emerald-100 text-emerald-800',
-  DISABLED: 'bg-slate-200 text-slate-700',
-  FAILED: 'bg-red-100 text-red-800',
-  INOPERABLE: 'bg-red-100 text-red-800',
+  ENABLED: GREEN,
+  DISABLED: GRAY,
+  FAILED: RED,
+  INOPERABLE: RED,
   // epoch
-  OPEN: 'bg-sky-100 text-sky-800',
-  CLOSED: 'bg-slate-200 text-slate-700',
-  INPUTS_PROCESSED: 'bg-indigo-100 text-indigo-800',
-  CLAIM_COMPUTED: 'bg-violet-100 text-violet-800',
-  CLAIM_SUBMITTED: 'bg-amber-100 text-amber-800',
-  CLAIM_ACCEPTED: 'bg-emerald-100 text-emerald-800',
-  CLAIM_REJECTED: 'bg-red-100 text-red-800',
+  OPEN: BLUE,
+  CLOSED: GRAY,
+  INPUTS_PROCESSED: INDIGO,
+  CLAIM_COMPUTED: VIOLET,
+  CLAIM_SUBMITTED: AMBER,
+  CLAIM_ACCEPTED: GREEN,
+  CLAIM_REJECTED: RED,
   // input
-  NONE: 'bg-slate-200 text-slate-700',
-  ACCEPTED: 'bg-emerald-100 text-emerald-800',
-  REJECTED: 'bg-red-100 text-red-800',
-  EXCEPTION: 'bg-red-100 text-red-800',
-  MACHINE_HALTED: 'bg-red-100 text-red-800',
-  OUTPUTS_LIMIT_EXCEEDED: 'bg-amber-100 text-amber-800',
-  CYCLE_LIMIT_EXCEEDED: 'bg-amber-100 text-amber-800',
-  TIME_LIMIT_EXCEEDED: 'bg-amber-100 text-amber-800',
-  PAYLOAD_LENGTH_LIMIT_EXCEEDED: 'bg-amber-100 text-amber-800',
+  NONE: GRAY,
+  ACCEPTED: GREEN,
+  REJECTED: RED,
+  EXCEPTION: RED,
+  MACHINE_HALTED: RED,
+  OUTPUTS_LIMIT_EXCEEDED: AMBER,
+  CYCLE_LIMIT_EXCEEDED: AMBER,
+  TIME_LIMIT_EXCEEDED: AMBER,
+  PAYLOAD_LENGTH_LIMIT_EXCEEDED: AMBER,
   // match winner / deletion
-  ONE: 'bg-emerald-100 text-emerald-800',
-  TWO: 'bg-emerald-100 text-emerald-800',
-  STEP: 'bg-violet-100 text-violet-800',
-  TIMEOUT: 'bg-amber-100 text-amber-800',
-  CHILD_TOURNAMENT: 'bg-indigo-100 text-indigo-800',
-  NOT_DELETED: 'bg-slate-200 text-slate-700',
+  ONE: GREEN,
+  TWO: GREEN,
+  STEP: VIOLET,
+  TIMEOUT: AMBER,
+  CHILD_TOURNAMENT: INDIGO,
+  NOT_DELETED: GRAY,
+  // tournament progress (UI-derived)
+  FINISHED: GREEN,
+  IN_PROGRESS: BLUE,
 }
 
 export function StatusBadge({ status }: { status?: string | null }) {
-  if (!status) return <span className="text-slate-400">—</span>
-  const color = STATUS_COLORS[status] ?? 'bg-slate-200 text-slate-700'
+  if (!status) return <span className="text-slate-400 dark:text-slate-500">—</span>
+  const color = STATUS_COLORS[status] ?? GRAY
   return (
     <span
       className={`inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold tracking-wide ${color}`}
@@ -110,9 +123,9 @@ export function Section({
   children: ReactNode
 }) {
   return (
-    <section className="rounded-lg border border-slate-200 bg-white shadow-sm">
-      <header className="flex items-center justify-between border-b border-slate-100 px-4 py-2.5">
-        <h2 className="text-sm font-semibold text-slate-700">{title}</h2>
+    <section className="rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <header className="flex items-center justify-between border-b border-slate-100 px-4 py-2.5 dark:border-slate-800">
+        <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-200">{title}</h2>
         {actions}
       </header>
       <div className="p-4">{children}</div>
@@ -128,8 +141,8 @@ export function KV({ rows }: { rows: Array<[ReactNode, ReactNode] | null> }) {
         .filter((row): row is [ReactNode, ReactNode] => row !== null)
         .map(([key, value], i) => (
           <div key={i} className="contents">
-            <dt className="text-sm text-slate-500">{key}</dt>
-            <dd className="text-sm text-slate-900 min-w-0">{value}</dd>
+            <dt className="text-sm text-slate-500 dark:text-slate-400">{key}</dt>
+            <dd className="text-sm text-slate-900 min-w-0 dark:text-slate-100">{value}</dd>
           </div>
         ))}
     </dl>
@@ -151,7 +164,7 @@ export function Collapsible({
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="text-sm text-sky-700 hover:underline cursor-pointer"
+        className={`text-sm cursor-pointer ${linkClass}`}
       >
         {open ? '▾' : '▸'} {label}
       </button>
@@ -162,7 +175,7 @@ export function Collapsible({
 
 export function JsonView({ value }: { value: unknown }) {
   return (
-    <pre className="overflow-x-auto rounded-md bg-slate-900 p-3 text-xs leading-relaxed text-slate-100">
+    <pre className="overflow-x-auto rounded-md bg-slate-900 p-3 text-xs leading-relaxed text-slate-100 dark:bg-slate-950 dark:ring-1 dark:ring-slate-800">
       {JSON.stringify(value, null, 2)}
     </pre>
   )
@@ -170,8 +183,8 @@ export function JsonView({ value }: { value: unknown }) {
 
 export function Spinner({ label = 'Loading…' }: { label?: string }) {
   return (
-    <div className="flex items-center gap-2 py-8 text-sm text-slate-500 justify-center">
-      <span className="h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-sky-600" />
+    <div className="flex items-center gap-2 py-8 text-sm text-slate-500 dark:text-slate-400 justify-center">
+      <span className="h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-sky-600 dark:border-slate-700 dark:border-t-sky-400" />
       {label}
     </div>
   )
@@ -180,28 +193,28 @@ export function Spinner({ label = 'Loading…' }: { label?: string }) {
 export function ErrorBox({ error }: { error: unknown }) {
   const message = error instanceof Error ? error.message : String(error)
   return (
-    <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+    <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900 dark:bg-red-950/50 dark:text-red-300">
       {message}
     </div>
   )
 }
 
 export function EmptyState({ label = 'Nothing found.' }: { label?: string }) {
-  return <div className="py-8 text-center text-sm text-slate-400">{label}</div>
+  return <div className="py-8 text-center text-sm text-slate-400 dark:text-slate-500">{label}</div>
 }
 
 export function Crumbs({ items }: { items: Array<{ label: ReactNode; to?: string }> }) {
   return (
-    <nav className="mb-4 flex flex-wrap items-center gap-1.5 text-sm text-slate-500">
+    <nav className="mb-4 flex flex-wrap items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
       {items.map((item, i) => (
         <span key={i} className="flex items-center gap-1.5">
-          {i > 0 && <span className="text-slate-300">/</span>}
+          {i > 0 && <span className="text-slate-300 dark:text-slate-600">/</span>}
           {item.to ? (
-            <Link to={item.to} className="text-sky-700 hover:underline">
+            <Link to={item.to} className={linkClass}>
               {item.label}
             </Link>
           ) : (
-            <span className="text-slate-700 font-medium">{item.label}</span>
+            <span className="text-slate-700 font-medium dark:text-slate-200">{item.label}</span>
           )}
         </span>
       ))}

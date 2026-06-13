@@ -5,12 +5,12 @@ import { decimalToHex, formatDate, formatUint, hexToBigInt } from '../lib/format
 import { useApp } from './AppLayout'
 
 function HashList({ hashes }: { hashes: string[] | null }) {
-  if (!hashes || hashes.length === 0) return <span className="text-sm text-slate-400">—</span>
+  if (!hashes || hashes.length === 0) return <span className="text-sm text-slate-400 dark:text-slate-500">—</span>
   return (
     <ol className="space-y-1 font-mono text-xs">
       {hashes.map((h, i) => (
         <li key={i} className="flex gap-2">
-          <span className="w-6 text-right text-slate-400">{i}</span>
+          <span className="w-6 text-right text-slate-400 dark:text-slate-500">{i}</span>
           <Hex value={h} full />
         </li>
       ))}
@@ -108,7 +108,7 @@ function QuickLink({ to, label }: { to: string; label: string }) {
   return (
     <Link
       to={to}
-      className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-sky-700 hover:bg-sky-50"
+      className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-sky-700 hover:bg-sky-50 dark:border-slate-700 dark:bg-slate-900 dark:text-sky-400 dark:hover:bg-slate-800"
     >
       {label} →
     </Link>

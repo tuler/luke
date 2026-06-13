@@ -48,7 +48,7 @@ export function MatchPage() {
             [
               'Epoch',
               <Link
-                className="text-sky-700 hover:underline"
+                className="text-sky-700 hover:underline dark:text-sky-400"
                 to={`${base}/epochs/${uintToDecimal(m.epoch_index)}`}
               >
                 {formatUint(m.epoch_index)}

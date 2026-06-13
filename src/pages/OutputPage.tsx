@@ -31,7 +31,7 @@ export function OutputPage() {
         title={
           <span className="flex items-center gap-3">
             Output {formatUint(o.index)}
-            <span className="rounded bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-700">
+            <span className="rounded bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300">
               {typeLabel}
             </span>
           </span>
@@ -43,7 +43,7 @@ export function OutputPage() {
             [
               'Epoch',
               <Link
-                className="text-sky-700 hover:underline"
+                className="text-sky-700 hover:underline dark:text-sky-400"
                 to={`${base}/epochs/${uintToDecimal(o.epoch_index)}`}
               >
                 {formatUint(o.epoch_index)}
@@ -52,7 +52,7 @@ export function OutputPage() {
             [
               'Input',
               <Link
-                className="text-sky-700 hover:underline"
+                className="text-sky-700 hover:underline dark:text-sky-400"
                 to={`${base}/inputs/${uintToDecimal(o.input_index)}`}
               >
                 {formatUint(o.input_index)}
@@ -89,13 +89,13 @@ export function OutputPage() {
             <ol className="space-y-1 font-mono text-xs">
               {o.output_hashes_siblings.map((h, i) => (
                 <li key={i} className="flex gap-2">
-                  <span className="w-6 text-right text-slate-400">{i}</span>
+                  <span className="w-6 text-right text-slate-400 dark:text-slate-500">{i}</span>
                   <Hex value={h} full />
                 </li>
               ))}
             </ol>
           ) : (
-            <span className="text-sm text-slate-400">—</span>
+            <span className="text-sm text-slate-400 dark:text-slate-500">—</span>
           )}
         </Collapsible>
         <Collapsible label="Raw output data">

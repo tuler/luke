@@ -60,7 +60,7 @@ export function ReportsPage() {
               <Link
                 to={`/apps/${appParam}/epochs/${uintToDecimal(r.epoch_index)}`}
                 onClick={(e) => e.stopPropagation()}
-                className="text-sky-700 hover:underline"
+                className="text-sky-700 hover:underline dark:text-sky-400"
               >
                 {formatUint(r.epoch_index)}
               </Link>
@@ -73,7 +73,7 @@ export function ReportsPage() {
               <Link
                 to={`/apps/${appParam}/inputs/${uintToDecimal(r.input_index)}`}
                 onClick={(e) => e.stopPropagation()}
-                className="text-sky-700 hover:underline"
+                className="text-sky-700 hover:underline dark:text-sky-400"
               >
                 {formatUint(r.input_index)}
               </Link>

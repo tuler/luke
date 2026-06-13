@@ -10,7 +10,7 @@ export function ApplicationsPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-slate-800">Applications</h1>
+        <h1 className="text-xl font-semibold text-slate-800 dark:text-slate-100">Applications</h1>
         <SortToggle descending={descending} onChange={(desc) => update({ desc })} />
       </div>
       <Section title={`Registered applications`}>
@@ -18,7 +18,7 @@ export function ApplicationsPage() {
           columns={[
             {
               header: 'Name',
-              cell: (app) => <span className="font-medium text-sky-700">{app.name}</span>,
+              cell: (app) => <span className="font-medium text-sky-700 dark:text-sky-400">{app.name}</span>,
             },
             { header: 'Address', cell: (app) => <Hex value={app.iapplication_address} /> },
             { header: 'Consensus', cell: (app) => <StatusBadge status={app.consensus_type} /> },

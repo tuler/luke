@@ -45,7 +45,7 @@ export function TournamentPage() {
             [
               'Epoch',
               <Link
-                className="text-sky-700 hover:underline"
+                className="text-sky-700 hover:underline dark:text-sky-400"
                 to={`${base}/epochs/${uintToDecimal(t.epoch_index)}`}
               >
                 {formatUint(t.epoch_index)}
@@ -128,7 +128,7 @@ export function TournamentPage() {
             {
               header: 'Winner',
               cell: (c) =>
-                c.winner_commitment ? <Hex value={c.winner_commitment} /> : <span className="text-slate-400">—</span>,
+                c.winner_commitment ? <Hex value={c.winner_commitment} /> : <span className="text-slate-400 dark:text-slate-500">—</span>,
             },
           ]}
           rows={children.data?.data}

@@ -5,9 +5,9 @@ import { useApp } from './AppLayout'
 
 function StatCard({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm">
-      <div className="text-xs uppercase tracking-wide text-slate-500">{label}</div>
-      <div className="mt-1 text-xl font-semibold text-slate-800">{value}</div>
+    <div className="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">{label}</div>
+      <div className="mt-1 text-xl font-semibold text-slate-800 dark:text-slate-100">{value}</div>
     </div>
   )
 }
@@ -82,7 +82,7 @@ export function AppOverview() {
               ]}
             />
           ) : (
-            <p className="text-sm text-slate-500">Not available.</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Not available.</p>
           )}
         </Section>
       </div>
