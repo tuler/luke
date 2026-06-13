@@ -85,7 +85,7 @@ export function decode(payload, context) {
 }
 ```
 
-See [`examples/decoder.js`](examples/decoder.js) for a working example. The mock server serves it at `http://localhost:10011/decoder.js` — register that URL on an application's Overview page to try the full loop.
+See [`examples/decoder.js`](examples/decoder.js) for a working example. The mock server serves it at `http://localhost:10011/decoder.js` — register that URL on an application's Overview page to try the full loop. A second example, [`examples/perp-dex-decoder.js`](examples/perp-dex-decoder.js) (served at `http://localhost:10011/perp-dex-decoder.js`), decodes the packed binary inputs of the mock `perp-dex` application. It dispatches on the input *sender*: inputs from a known Cartesi portal address are asset deposits, decoded with the canonical `InputEncoding` portal message (the same for every app); everything else is an application message (orders, withdrawals, price feeds) decoded by its leading type byte.
 
 On application pages the registered decoder is mirrored into a `?decoder=` query param, so the address bar is a shareable link that carries the decoder along with the node, e.g.:
 

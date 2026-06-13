@@ -25,6 +25,108 @@ const executionParameters = {
   updated_at: now(5),
 }
 
+// ---- perp-dex packed payloads (see examples/perp-dex-decoder.js) ----
+
+// Big-endian hex of `value` in `size` bytes.
+const be = (value: bigint | number, size: number) =>
+  BigInt(value).toString(16).padStart(size * 2, '0')
+// ASCII characters packed into a u64, first character in the lowest byte.
+const symbolCode = (name: string) =>
+  [...name].reduceRight((v, c) => (v << 8n) | BigInt(c.charCodeAt(0)), 0n)
+
+type FeedEntry = [symbol: string, timestamp: number, coefficient: number, decimals: number]
+const feedPrices = (entries: FeedEntry[]) =>
+  '0x00' +
+  be(entries.length, 2) +
+  entries
+    .map(([s, ts, c, d]) => be(symbolCode(s), 8) + be(ts, 8) + be(c, 8) + be(d, 1))
+    .join('')
+// Canonical Cartesi InputEncoding portal messages.
+const erc20Deposit = (token: string, sender: string, amount: bigint) =>
+  '0x' + token.slice(2) + sender.slice(2) + be(amount, 32)
+const etherDeposit = (sender: string, value: bigint) => '0x' + sender.slice(2) + be(value, 32)
+const withdraw = (coefficient: number, decimals: number) =>
+  '0x02' + be(coefficient, 8) + be(decimals, 1)
+const placeOrder = (
+  symbol: string,
+  price: [coefficient: number, decimals: number],
+  size: [coefficient: number, decimals: number],
+  side: number,
+  timeInForce: number,
+  postOnly = 0,
+  reduceOnly = 0,
+) =>
+  '0x03' +
+  be(symbolCode(symbol), 8) +
+  be(price[0], 8) +
+  be(price[1], 1) +
+  be(size[0], 8) +
+  be(size[1], 1) +
+  be(side, 1) +
+  be(timeInForce, 1) +
+  be(postOnly, 1) +
+  be(reduceOnly, 1)
+const cancelOrder = (orderId: number) => '0x04' + be(orderId, 8)
+
+// Deterministic Cartesi Rollups v2 portal addresses (deposits arrive from these).
+const erc20Portal = '0xACA6586A0Cf05bD831f2501E7B4aea550dA6562D'
+const etherPortal = '0xA632c5c05812c6a6149B7af5C56117d1D2603828'
+const collateralToken = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913' // USDC (perp-dex collateral)
+const priceFeed = addr(50)
+const trader1 = addr(53)
+const trader2 = addr(54)
+
+const feedAt = (m: number): FeedEntry[] => {
+  const ts = Math.floor(Date.now() / 1000) - (14 - m) * 60
+  return [
+    ['BTC', ts, 6512345 + m * 1000, 2],
+    ['ETH', ts, 345678 + m * 100, 2],
+    ['SOL', ts, 15125 + m * 10, 2],
+    ['CTSI', ts, 1525 + m, 4],
+  ]
+}
+
+// [sender, payload] per input, mixing portal deposits and app messages.
+const perpPayloads: [string, string][] = [
+  [erc20Portal, erc20Deposit(collateralToken, trader1, 5_000_000_000n)], // 5,000 USDC (6 decimals)
+  [erc20Portal, erc20Deposit(collateralToken, trader2, 12_500_500_000n)], // 12,500.50 USDC
+  [priceFeed, feedPrices(feedAt(2))],
+  [trader1, placeOrder('BTC', [6500000, 2], [5, 1], 0, 0)], // Buy 0.5 BTC @ 65000
+  [trader2, placeOrder('ETH', [346010, 2], [2, 0], 1, 1)], // Sell 2 ETH @ 3460.10 IOC
+  [priceFeed, feedPrices(feedAt(5))],
+  [trader1, placeOrder('SOL', [15080, 2], [10, 0], 0, 0, 1)], // post-only
+  [trader1, cancelOrder(1042)],
+  [trader2, withdraw(125025, 2)], // 1,250.25
+  [priceFeed, feedPrices(feedAt(9))],
+  [trader2, placeOrder('CTSI', [1530, 4], [1000, 0], 1, 0, 0, 1)], // reduce-only
+  [trader2, cancelOrder(1043)],
+  [etherPortal, etherDeposit(trader1, 1_500_000_000_000_000_000n)], // 1.5 ETH (18 decimals)
+  [erc20Portal, erc20Deposit(collateralToken, trader1, 2_000_000_000n)], // 2,000 USDC
+]
+
+const perpInputs = perpPayloads.map(([sender, payload], i) => ({
+  epoch_index: hex(Math.min(Math.floor(i / 3), 4)),
+  index: hex(i),
+  block_number: hex(105 + i * 90),
+  raw_data: '0x415bf363' + 'ab'.repeat(64),
+  decoded_data: {
+    chain_id: hex(31337),
+    application_contract: addr(20),
+    sender,
+    block_number: hex(105 + i * 90),
+    block_timestamp: hex(Math.floor(Date.now() / 1000) - (14 - i) * 60),
+    prev_randao: hash(800 + i),
+    index: hex(i),
+    payload,
+  },
+  status: i === 11 ? 'REJECTED' : 'ACCEPTED',
+  machine_hash: hash(820 + i),
+  outputs_hash: hash(840 + i),
+  transaction_reference: hash(860 + i),
+  created_at: now(1400 - i * 100),
+  updated_at: now(140 - i * 10),
+}))
+
 const apps = [
   {
     name: 'echo-dapp',
@@ -66,6 +168,27 @@ const apps = [
     processed_inputs: hex(7),
     created_at: now(30000),
     updated_at: now(1),
+    execution_parameters: executionParameters,
+  },
+  {
+    name: 'perp-dex',
+    iapplication_address: addr(20),
+    iconsensus_address: addr(21),
+    iinputbox_address: addr(3),
+    template_hash: hash(3),
+    epoch_length: hex(720),
+    data_availability: '0xdeadbeef',
+    consensus_type: 'AUTHORITY',
+    state: 'ENABLED',
+    reason: null,
+    iinputbox_block: hex(100),
+    last_epoch_check_block: hex(5000),
+    last_input_check_block: hex(5000),
+    last_output_check_block: hex(4990),
+    last_tournament_check_block: hex(0),
+    processed_inputs: hex(perpInputs.length),
+    created_at: now(15000),
+    updated_at: now(3),
     execution_parameters: executionParameters,
   },
 ]
@@ -270,6 +393,8 @@ function requireApp(params: Params) {
   return app
 }
 
+const appInputs = (app: { name: string }) => (app.name === 'perp-dex' ? perpInputs : inputs)
+
 const methods: Record<string, (params: Params) => unknown> = {
   cartesi_listApplications: (p) => paginate(apps, p),
   cartesi_getApplication: (p) => ({ data: requireApp(p) }),
@@ -289,9 +414,9 @@ const methods: Record<string, (params: Params) => unknown> = {
     return { data: epoch }
   },
   cartesi_listInputs: (p) => {
-    requireApp(p)
+    const app = requireApp(p)
     return paginate(
-      inputs.filter(
+      appInputs(app).filter(
         (i) =>
           (p.epoch_index == null || eq(i.epoch_index, p.epoch_index)) &&
           (p.sender == null || eq(i.decoded_data.sender, p.sender)),
@@ -300,8 +425,8 @@ const methods: Record<string, (params: Params) => unknown> = {
     )
   },
   cartesi_getInput: (p) => {
-    requireApp(p)
-    const input = inputs.find((i) => eq(i.index, p.input_index))
+    const app = requireApp(p)
+    const input = appInputs(app).find((i) => eq(i.index, p.input_index))
     if (!input) throw { code: -32001, message: 'input not found' }
     return { data: input }
   },
@@ -430,10 +555,14 @@ Bun.serve({
   async fetch(req) {
     const url = new URL(req.url)
     if (req.method === 'OPTIONS') return new Response(null, { headers: CORS_HEADERS })
-    // Example payload decoder module (see examples/decoder.js); register this
-    // URL on an application's Overview page in the explorer to try it.
-    if (url.pathname === '/decoder.js' && req.method === 'GET') {
-      return new Response(Bun.file(new URL('../examples/decoder.js', import.meta.url)), {
+    // Example payload decoder modules (see examples/); register one of these
+    // URLs on an application's Overview page in the explorer to try it.
+    // decoder.js fits echo-dapp/honeypot, perp-dex-decoder.js fits perp-dex.
+    if (
+      (url.pathname === '/decoder.js' || url.pathname === '/perp-dex-decoder.js') &&
+      req.method === 'GET'
+    ) {
+      return new Response(Bun.file(new URL(`../examples${url.pathname}`, import.meta.url)), {
         headers: { ...CORS_HEADERS, 'content-type': 'text/javascript' },
       })
     }
@@ -462,3 +591,4 @@ Bun.serve({
 
 console.log('Mock Cartesi node JSON-RPC server listening on http://localhost:10011/rpc')
 console.log('Example payload decoder served at http://localhost:10011/decoder.js')
+console.log('Perp DEX payload decoder served at http://localhost:10011/perp-dex-decoder.js')
