@@ -86,10 +86,10 @@ export function ReportsPage() {
           },
           {
             header: 'Payload',
+            truncate: true,
             cell: (r) => (
               <PayloadPreview
                 value={r.raw_data}
-                max={48}
                 decode={{ application: application.iapplication_address, kind: 'report', record: r }}
               />
             ),

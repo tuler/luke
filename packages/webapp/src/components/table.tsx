@@ -104,6 +104,8 @@ interface Column<T> {
   header: ReactNode
   cell: (row: T) => ReactNode
   align?: 'left' | 'right'
+  /** Absorb the table's leftover width and clip overflow with an ellipsis. */
+  truncate?: boolean
 }
 
 export function DataTable<T>({
@@ -137,7 +139,7 @@ export function DataTable<T>({
             {columns.map((col, i) => (
               <th
                 key={i}
-                className={`px-3 py-2 font-semibold ${col.align === 'right' ? 'text-right' : ''}`}
+                className={`whitespace-nowrap px-3 py-2 font-semibold ${col.align === 'right' ? 'text-right' : ''}`}
               >
                 {col.header}
               </th>
@@ -156,9 +158,11 @@ export function DataTable<T>({
               {columns.map((col, i) => (
                 <td
                   key={i}
-                  className={`px-3 py-2 align-middle ${col.align === 'right' ? 'text-right' : ''}`}
+                  className={`whitespace-nowrap px-3 py-2 align-middle ${
+                    col.align === 'right' ? 'text-right' : ''
+                  }${col.truncate ? ' w-full max-w-0' : ''}`}
                 >
-                  {col.cell(row)}
+                  {col.truncate ? <div className="truncate">{col.cell(row)}</div> : col.cell(row)}
                 </td>
               ))}
             </tr>

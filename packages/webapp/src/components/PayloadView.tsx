@@ -103,35 +103,29 @@ function Copy({ value }: { value: string }) {
   )
 }
 
-/** Short inline preview of a payload for table cells. */
-export function PayloadPreview({
-  value,
-  max = 24,
-  decode,
-}: {
-  value?: string | null
-  max?: number
-  decode?: DecodeProps
-}) {
+/**
+ * Inline preview of a payload for table cells. Renders the full summary/text;
+ * place it in a column marked `truncate` so it fills the available width and
+ * clips overflow with an ellipsis (the full value is shown on hover).
+ */
+export function PayloadPreview({ value, decode }: { value?: string | null; decode?: DecodeProps }) {
   const decoded = useDecodedPayload(value, decode)
   if (!value || value === '0x') return <span className="text-slate-400 dark:text-slate-500">—</span>
   if (decoded.status === 'decoded' && decoded.result) {
     const full = decoded.result.summary ?? decodedToText(decoded.result)
     if (full) {
-      const text = full.length > max ? full.slice(0, max) + '…' : full
       return (
         <span className="text-slate-700 dark:text-slate-300" title={full}>
-          {text}
+          {full}
         </span>
       )
     }
   }
   const utf8 = hexToUtf8(value)
   if (utf8 !== null) {
-    const text = utf8.length > max ? utf8.slice(0, max) + '…' : utf8
     return (
       <span className="text-slate-700 dark:text-slate-300" title={utf8}>
-        “{text}”
+        “{utf8}”
       </span>
     )
   }

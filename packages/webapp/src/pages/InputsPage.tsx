@@ -66,10 +66,11 @@ export function InputsPage() {
             ),
           },
           { header: 'Status', cell: (i) => <StatusBadge status={i.status} /> },
-          { header: 'Sender', cell: (i) => <Hex value={i.decoded_data?.sender} /> },
+          { header: 'Sender', cell: (i) => <Hex value={i.decoded_data?.sender} head={6} tail={4} /> },
           { header: 'Block', align: 'right', cell: (i) => formatUint(i.block_number) },
           {
             header: 'Payload',
+            truncate: true,
             cell: (i) => (
               <PayloadPreview
                 value={i.decoded_data?.payload}

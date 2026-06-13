@@ -123,6 +123,7 @@ export function OutputsPage() {
           { header: 'Destination', cell: (o) => <Hex value={o.decoded_data?.destination} /> },
           {
             header: 'Payload',
+            truncate: true,
             cell: (o) => (
               <PayloadPreview
                 value={o.decoded_data?.payload}
