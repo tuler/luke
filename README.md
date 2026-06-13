@@ -85,7 +85,29 @@ export function decode(payload, context) {
 }
 ```
 
-See [`examples/decoder.js`](examples/decoder.js) for a working example. The mock server serves it at `http://localhost:10011/decoder.js` — register that URL on an application's Overview page to try the full loop. A second example, [`examples/perp-dex-decoder.js`](examples/perp-dex-decoder.js) (served at `http://localhost:10011/perp-dex-decoder.js`), decodes the packed binary inputs of the mock `perp-dex` application. It dispatches on the input *sender*: inputs from a known Cartesi portal address are asset deposits, decoded with the canonical `InputEncoding` portal message (the same for every app); everything else is an application message (orders, withdrawals, price feeds) decoded by its leading type byte.
+### TypeScript and the decoder kit
+
+For a typed authoring experience, write decoders in TypeScript against the [`decoder-kit/`](decoder-kit/) — a dependency-free toolkit that provides the fully typed contract (`Decoder`, `DecodeContext`, `DecodeResult` and the API record types, so `context.record` is typed per `kind`), standard Cartesi **portal deposit decoding** that every app can reuse instead of reimplementing, and byte-reading helpers:
+
+```ts
+import { type Decoder, decodePortalInput, ByteReader, formatUnits } from '../decoder-kit'
+
+export const version = 1
+export const name = 'My decoder'
+
+export const decode: Decoder['decode'] = (payload, context) => {
+  if (context.kind !== 'input') return null
+  const deposit = decodePortalInput(payload, context) // shared across all apps
+  if (deposit) return deposit
+  // …decode this application's own messages…
+}
+```
+
+Decoders load as browser ES modules, so compile to a single self-contained `.js` and host it (`bun build my-decoder.ts --target=browser --format=esm --outfile=my-decoder.js`). See [`decoder-kit/README.md`](decoder-kit/README.md) for the full authoring and build workflow.
+
+### Examples
+
+See [`examples/decoder.js`](examples/decoder.js) for a plain-JavaScript example. The mock server serves it at `http://localhost:10011/decoder.js` — register that URL on an application's Overview page to try the full loop. A second example, [`examples/perp-dex-decoder.ts`](examples/perp-dex-decoder.ts), is written in **TypeScript** using the decoder kit; the mock bundles it on the fly and serves it at `http://localhost:10011/perp-dex-decoder.js`. It decodes the packed binary inputs of the mock `perp-dex` application, dispatching on the input *sender*: inputs from a known Cartesi portal address are asset deposits decoded by the kit's shared `decodePortalInput()`, while everything else is an application message (orders, withdrawals, price feeds) decoded by its leading type byte.
 
 On application pages the registered decoder is mirrored into a `?decoder=` query param, so the address bar is a shareable link that carries the decoder along with the node, e.g.:
 

@@ -25,7 +25,7 @@ const executionParameters = {
   updated_at: now(5),
 }
 
-// ---- perp-dex packed payloads (see examples/perp-dex-decoder.js) ----
+// ---- perp-dex packed payloads (see examples/perp-dex-decoder.ts) ----
 
 // Big-endian hex of `value` in `size` bytes.
 const be = (value: bigint | number, size: number) =>
@@ -550,6 +550,24 @@ const CORS_HEADERS = {
   'access-control-allow-headers': 'content-type',
 }
 
+const JS_HEADERS = { ...CORS_HEADERS, 'content-type': 'text/javascript' }
+
+// Bundle a TypeScript decoder (which imports the decoder-kit) into a single
+// browser ES module, the same way an author would ship one. Built fresh per
+// request so edits to the source or kit are picked up without a restart.
+async function bundleDecoder(entry: string): Promise<Response> {
+  const result = await Bun.build({
+    entrypoints: [new URL(entry, import.meta.url).pathname],
+    target: 'browser',
+    format: 'esm',
+  })
+  if (!result.success) {
+    const message = result.logs.map(String).join('\n')
+    return new Response(`/* decoder bundle failed */\n${message}`, { status: 500, headers: JS_HEADERS })
+  }
+  return new Response(await result.outputs[0].text(), { headers: JS_HEADERS })
+}
+
 Bun.serve({
   port: 10011,
   async fetch(req) {
@@ -557,14 +575,15 @@ Bun.serve({
     if (req.method === 'OPTIONS') return new Response(null, { headers: CORS_HEADERS })
     // Example payload decoder modules (see examples/); register one of these
     // URLs on an application's Overview page in the explorer to try it.
-    // decoder.js fits echo-dapp/honeypot, perp-dex-decoder.js fits perp-dex.
-    if (
-      (url.pathname === '/decoder.js' || url.pathname === '/perp-dex-decoder.js') &&
-      req.method === 'GET'
-    ) {
-      return new Response(Bun.file(new URL(`../examples${url.pathname}`, import.meta.url)), {
-        headers: { ...CORS_HEADERS, 'content-type': 'text/javascript' },
+    // decoder.js (plain JS) fits echo-dapp/honeypot; perp-dex-decoder.js is the
+    // TypeScript example, bundled on the fly from examples/perp-dex-decoder.ts.
+    if (url.pathname === '/decoder.js' && req.method === 'GET') {
+      return new Response(Bun.file(new URL('../examples/decoder.js', import.meta.url)), {
+        headers: JS_HEADERS,
       })
+    }
+    if (url.pathname === '/perp-dex-decoder.js' && req.method === 'GET') {
+      return bundleDecoder('../examples/perp-dex-decoder.ts')
     }
     if (url.pathname !== '/rpc' || req.method !== 'POST') {
       return new Response('not found', { status: 404, headers: CORS_HEADERS })

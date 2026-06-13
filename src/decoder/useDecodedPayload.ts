@@ -3,7 +3,7 @@ import { useChainId } from '../api/hooks'
 import { hexToBigInt } from '../lib/format'
 import { loadDecoder } from './loader'
 import { useDecoderUrl } from './registry'
-import type { DecodeResult, PayloadKind } from './types'
+import type { DecodeContext, DecodeResult, PayloadKind } from './types'
 
 /** Identifies a payload for decoding; passed through to the registered decoder. */
 export interface DecodeProps {
@@ -32,12 +32,15 @@ export function useDecodedPayload(payload?: string | null, props?: DecodeProps):
     queryKey: ['decode', url, props?.kind, payload],
     queryFn: async () => {
       const decoder = await loadDecoder(url!)
-      const result = await decoder.decode(payload!, {
+      // Cast: kind is a runtime value and record is unknown here, so the
+      // discriminated DecodeContext can't be proven, though the shape is correct.
+      const context = {
         kind: props!.kind,
         application: props!.application.toLowerCase(),
         chainId: chainId === null ? undefined : Number(chainId),
         record: props!.record,
-      })
+      } as DecodeContext
+      const result = await decoder.decode(payload!, context)
       return result ?? null
     },
     enabled,
