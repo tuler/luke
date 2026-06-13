@@ -10,7 +10,7 @@ export function InputsPage() {
   const { searchParams, limit, offset, descending, update } = useListControls()
   const epoch = searchParams.get('epoch') ?? ''
   const sender = searchParams.get('sender') ?? ''
-  const { appParam } = useApp()
+  const { appParam, application } = useApp()
 
   const inputs = useInputs(
     appParam,
@@ -68,7 +68,15 @@ export function InputsPage() {
           { header: 'Status', cell: (i) => <StatusBadge status={i.status} /> },
           { header: 'Sender', cell: (i) => <Hex value={i.decoded_data?.sender} /> },
           { header: 'Block', align: 'right', cell: (i) => formatUint(i.block_number) },
-          { header: 'Payload', cell: (i) => <PayloadPreview value={i.decoded_data?.payload} /> },
+          {
+            header: 'Payload',
+            cell: (i) => (
+              <PayloadPreview
+                value={i.decoded_data?.payload}
+                decode={{ application: application.iapplication_address, kind: 'input', record: i }}
+              />
+            ),
+          },
         ]}
         rows={inputs.data?.data}
         rowKey={(i) => i.index}

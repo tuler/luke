@@ -421,7 +421,7 @@ const methods: Record<string, (params: Params) => unknown> = {
 
 const CORS_HEADERS = {
   'access-control-allow-origin': '*',
-  'access-control-allow-methods': 'POST, OPTIONS',
+  'access-control-allow-methods': 'GET, POST, OPTIONS',
   'access-control-allow-headers': 'content-type',
 }
 
@@ -430,6 +430,13 @@ Bun.serve({
   async fetch(req) {
     const url = new URL(req.url)
     if (req.method === 'OPTIONS') return new Response(null, { headers: CORS_HEADERS })
+    // Example payload decoder module (see examples/decoder.js); register this
+    // URL on an application's Overview page in the explorer to try it.
+    if (url.pathname === '/decoder.js' && req.method === 'GET') {
+      return new Response(Bun.file(new URL('../examples/decoder.js', import.meta.url)), {
+        headers: { ...CORS_HEADERS, 'content-type': 'text/javascript' },
+      })
+    }
     if (url.pathname !== '/rpc' || req.method !== 'POST') {
       return new Response('not found', { status: 404, headers: CORS_HEADERS })
     }
@@ -454,3 +461,4 @@ Bun.serve({
 })
 
 console.log('Mock Cartesi node JSON-RPC server listening on http://localhost:10011/rpc')
+console.log('Example payload decoder served at http://localhost:10011/decoder.js')

@@ -6,7 +6,7 @@ import { decimalToHex, formatDate, formatUint, uintToDecimal } from '../lib/form
 import { useApp } from './AppLayout'
 
 export function ReportPage() {
-  const { appParam } = useApp()
+  const { appParam, application } = useApp()
   const { reportIndex = '0' } = useParams()
   const report = useReport(appParam, decimalToHex(reportIndex))
 
@@ -53,7 +53,10 @@ export function ReportPage() {
       </Section>
 
       <Section title="Payload">
-        <PayloadView value={r.raw_data} />
+        <PayloadView
+          value={r.raw_data}
+          decode={{ application: application.iapplication_address, kind: 'report', record: r }}
+        />
       </Section>
 
       <Collapsible label="Raw JSON">

@@ -6,7 +6,7 @@ import { decimalToHex, formatDate, formatUint, hexToBigInt, uintToDecimal } from
 import { useApp } from './AppLayout'
 
 export function InputPage() {
-  const { appParam } = useApp()
+  const { appParam, application } = useApp()
   const { inputIndex = '0' } = useParams()
   const input = useInput(appParam, decimalToHex(inputIndex))
 
@@ -71,7 +71,13 @@ export function InputPage() {
                   : '—',
               ],
               ['Prev randao', <Hex value={decoded.prev_randao} />],
-              ['Payload', <PayloadView value={decoded.payload} />],
+              [
+                'Payload',
+                <PayloadView
+                  value={decoded.payload}
+                  decode={{ application: application.iapplication_address, kind: 'input', record: i }}
+                />,
+              ],
             ]}
           />
         </Section>
