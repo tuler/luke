@@ -1,0 +1,33 @@
+# Verdaccio config for the local decoder registry.
+# Decoder packages (@tuler/luke-*) are published here and served to the
+# explorer as browser ES modules by the esm.sh container (see docker-compose.yml).
+
+storage: /verdaccio/storage
+
+uplinks:
+  npmjs:
+    url: https://registry.npmjs.org/
+    cache: true
+
+packages:
+  # Our workspace packages: world-readable, publishable without auth (local dev).
+  '@tuler/*':
+    access: $all
+    publish: $anonymous
+    unpublish: $anonymous
+
+  # Everything else is proxied from npmjs so esm.sh can resolve any transitive
+  # dependency it needs while building a module for the browser.
+  '@*/*':
+    access: $all
+    publish: $authenticated
+    proxy: npmjs
+  '**':
+    access: $all
+    publish: $authenticated
+    proxy: npmjs
+
+# Allow large-ish bodies and disable the web UI rate limits for local use.
+max_body_size: 50mb
+
+log: { type: stdout, format: pretty, level: warn }

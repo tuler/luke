@@ -4,26 +4,52 @@
   "workspaces": {
     "": {
       "name": "luke",
+      "devDependencies": {
+        "@eslint/js": "^10.0.1",
+        "eslint": "^10.3.0",
+        "eslint-plugin-react-hooks": "^7.1.1",
+        "eslint-plugin-react-refresh": "^0.5.2",
+        "globals": "^17.6.0",
+        "typescript": "~6.0.2",
+        "typescript-eslint": "^8.59.2",
+      },
+    },
+    "packages/decoder-kit": {
+      "name": "@tuler/luke-decoder",
+      "version": "0.1.0",
+    },
+    "packages/json-decoder": {
+      "name": "@tuler/luke-json-decoder",
+      "version": "0.1.0",
+    },
+    "packages/mock": {
+      "name": "@tuler/luke-mock",
+      "version": "0.1.0",
+    },
+    "packages/perp-dex-decoder": {
+      "name": "@tuler/luke-perp-dex-decoder",
+      "version": "0.1.0",
+      "dependencies": {
+        "@tuler/luke-decoder": "workspace:*",
+      },
+    },
+    "packages/webapp": {
+      "name": "@tuler/luke-webapp",
+      "version": "0.1.0",
       "dependencies": {
         "@tanstack/react-query": "^5.101.0",
+        "@tuler/luke-decoder": "workspace:*",
         "react": "^19.2.6",
         "react-dom": "^19.2.6",
         "react-router-dom": "^7.17.0",
       },
       "devDependencies": {
-        "@eslint/js": "^10.0.1",
         "@tailwindcss/vite": "^4.3.1",
         "@types/node": "^25.9.3",
         "@types/react": "^19.2.14",
         "@types/react-dom": "^19.2.3",
         "@vitejs/plugin-react": "^6.0.1",
-        "eslint": "^10.3.0",
-        "eslint-plugin-react-hooks": "^7.1.1",
-        "eslint-plugin-react-refresh": "^0.5.2",
-        "globals": "^17.6.0",
         "tailwindcss": "^4.3.1",
-        "typescript": "~6.0.2",
-        "typescript-eslint": "^8.59.2",
         "vite": "^8.0.12",
       },
     },
@@ -172,6 +198,16 @@
     "@tanstack/query-core": ["@tanstack/query-core@5.101.0", "", {}, "sha512-cQetA74EB+seWySv1TTKr828TnP0u39m6LykwDXIo84SNortpDkp30TMEjkqtYCNP9c40uT/iwl6MLiufEt0Ow=="],
 
     "@tanstack/react-query": ["@tanstack/react-query@5.101.0", "", { "dependencies": { "@tanstack/query-core": "5.101.0" }, "peerDependencies": { "react": "^18 || ^19" } }, "sha512-rLlJXSpkqfizLWgkR5+eLeIk0MvTx/meEIR7LRjxic+qxiQP8zVjq7BqQkiCMNLQBlLfuOLqqr6KO5GtrDlmSg=="],
+
+    "@tuler/luke-decoder": ["@tuler/luke-decoder@workspace:packages/decoder-kit"],
+
+    "@tuler/luke-json-decoder": ["@tuler/luke-json-decoder@workspace:packages/json-decoder"],
+
+    "@tuler/luke-mock": ["@tuler/luke-mock@workspace:packages/mock"],
+
+    "@tuler/luke-perp-dex-decoder": ["@tuler/luke-perp-dex-decoder@workspace:packages/perp-dex-decoder"],
+
+    "@tuler/luke-webapp": ["@tuler/luke-webapp@workspace:packages/webapp"],
 
     "@tybys/wasm-util": ["@tybys/wasm-util@0.10.2", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-RoBvJ2X0wuKlWFIjrwffGw1IqZHKQqzIchKaadZZfnNpsAYp2mM0h36JtPCjNDAHGgYez/15uMBpfGwchhiMgg=="],
 

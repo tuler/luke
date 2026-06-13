@@ -1,0 +1,23 @@
+{
+  "name": "@tuler/luke-perp-dex-decoder",
+  "version": "0.1.0",
+  "description": "Example Cartesi Node Explorer decoder for the perp-dex application",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "publishConfig": {
+    "registry": "http://localhost:4873/",
+    "access": "public"
+  },
+  "dependencies": {
+    "@tuler/luke-decoder": "workspace:*"
+  },
+  "scripts": {
+    "build": "rm -rf dist && bun build src/index.ts --target=browser --format=esm --external @tuler/luke-decoder --outdir dist && bun ../../infra/prepare-dist.ts"
+  }
+}

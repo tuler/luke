@@ -5,19 +5,17 @@
     "module": "esnext",
     "skipLibCheck": true,
 
-    /* Bundler mode — decoders are bundled to a browser ES module */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
     "noEmit": true,
 
-    /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["decoder-kit", "examples/**/*.ts"]
+  "include": ["src"]
 }

@@ -21,13 +21,27 @@ Every list is paginated, sortable, and filterable (epoch, input, sender, output 
 - [TanStack Query](https://tanstack.com/query) for data fetching/caching
 - [React Router](https://reactrouter.com) for navigation
 - [Tailwind CSS 4](https://tailwindcss.com) for styling
-- [Bun](https://bun.sh) as package manager
+- [Bun](https://bun.sh) workspaces (monorepo)
+
+## Repository layout
+
+A Bun workspace under `packages/`:
+
+| Package | Path | Description |
+| --- | --- | --- |
+| `@tuler/luke-webapp` | [`packages/webapp`](packages/webapp) | the explorer (React/Vite app) |
+| `@tuler/luke-decoder` | [`packages/decoder-kit`](packages/decoder-kit) | typed toolkit for writing payload decoders |
+| `@tuler/luke-perp-dex-decoder` | [`packages/perp-dex-decoder`](packages/perp-dex-decoder) | example decoder (TypeScript, uses the kit) |
+| `@tuler/luke-json-decoder` | [`packages/json-decoder`](packages/json-decoder) | example decoder (plain JS) |
+| `@tuler/luke-mock` | [`packages/mock`](packages/mock) | mock JSON-RPC node for development |
+
+[`infra/`](infra) holds the local package registry (verdaccio) and module CDN (esm.sh) used to publish and serve decoders — see [Payload decoders](#payload-decoders).
 
 ## Usage
 
 ```sh
 bun install
-bun dev          # http://localhost:5173
+bun run dev      # explorer at http://localhost:5173
 ```
 
 Enter the node's JSON-RPC URL in the top bar (default: `http://localhost:10011/rpc`). The URL is persisted in localStorage. The green/red dot shows connectivity, along with the node's chain ID and version. The sun/moon button toggles dark mode (defaults to the OS preference, persisted in localStorage).
@@ -44,17 +58,17 @@ Opening such a link adopts that server (and saves it as the new default).
 
 ### Mock server
 
-A mock node with sample data (two applications, epochs, inputs, decoded outputs, and a PRT tournament tree) is included for UI development:
+A mock node with sample data (three applications — including `perp-dex` with packed binary inputs — epochs, inputs, decoded outputs, and a PRT tournament tree) is included for UI development:
 
 ```sh
-bun mock/server.ts   # serves http://localhost:10011/rpc with CORS enabled
+bun run mock         # serves http://localhost:10011/rpc with CORS enabled
 ```
 
 ### Production build
 
 ```sh
-bun run build        # type-checks and bundles into dist/
-bun run preview
+bun run build        # type-checks and bundles the webapp into packages/webapp/dist
+bun --filter @tuler/luke-webapp preview
 ```
 
 ## Payload decoders
@@ -87,10 +101,10 @@ export function decode(payload, context) {
 
 ### TypeScript and the decoder kit
 
-For a typed authoring experience, write decoders in TypeScript against the [`decoder-kit/`](decoder-kit/) — a dependency-free toolkit that provides the fully typed contract (`Decoder`, `DecodeContext`, `DecodeResult` and the API record types, so `context.record` is typed per `kind`), standard Cartesi **portal deposit decoding** that every app can reuse instead of reimplementing, and byte-reading helpers:
+For a typed authoring experience, write decoders in TypeScript against [`@tuler/luke-decoder`](packages/decoder-kit) — a dependency-free toolkit that provides the fully typed contract (`Decoder`, `DecodeContext`, `DecodeResult` and the API record types, so `context.record` is typed per `kind`), standard Cartesi **portal deposit decoding** that every app can reuse instead of reimplementing, and byte-reading helpers:
 
 ```ts
-import { type Decoder, decodePortalInput, ByteReader, formatUnits } from '../decoder-kit'
+import { type Decoder, decodePortalInput, ByteReader, formatUnits } from '@tuler/luke-decoder'
 
 export const version = 1
 export const name = 'My decoder'
@@ -103,20 +117,29 @@ export const decode: Decoder['decode'] = (payload, context) => {
 }
 ```
 
-Decoders load as browser ES modules, so compile to a single self-contained `.js` and host it (`bun build my-decoder.ts --target=browser --format=esm --outfile=my-decoder.js`). See [`decoder-kit/README.md`](decoder-kit/README.md) for the full authoring and build workflow.
+The example decoders live in their own packages: [`packages/json-decoder`](packages/json-decoder) (plain JS) and [`packages/perp-dex-decoder`](packages/perp-dex-decoder) (TypeScript, using the kit). The perp-dex decoder reads the packed binary inputs of the mock `perp-dex` application, dispatching on the input *sender*: inputs from a known Cartesi portal address are asset deposits decoded by the kit's shared `decodePortalInput()`, while everything else is an application message (orders, withdrawals, price feeds) decoded by its leading type byte. See [`packages/decoder-kit/README.md`](packages/decoder-kit/README.md) for the authoring guide.
 
-### Examples
+### Publishing and serving decoders locally
 
-See [`examples/decoder.js`](examples/decoder.js) for a plain-JavaScript example. The mock server serves it at `http://localhost:10011/decoder.js` — register that URL on an application's Overview page to try the full loop. A second example, [`examples/perp-dex-decoder.ts`](examples/perp-dex-decoder.ts), is written in **TypeScript** using the decoder kit; the mock bundles it on the fly and serves it at `http://localhost:10011/perp-dex-decoder.js`. It decodes the packed binary inputs of the mock `perp-dex` application, dispatching on the input *sender*: inputs from a known Cartesi portal address are asset deposits decoded by the kit's shared `decodePortalInput()`, while everything else is an application message (orders, withdrawals, price feeds) decoded by its leading type byte.
+Decoders load as browser ES modules from a URL. Rather than hosting files by hand, the repo runs a local npm registry ([verdaccio](https://verdaccio.org)) that the decoder packages are published to, and a self-hosted [esm.sh](https://esm.sh) that serves any published package to the browser as an ES module (resolving its dependency on `@tuler/luke-decoder` from the same registry):
+
+```sh
+bun run registry:up        # start verdaccio (:4873) + esm.sh (:8080) via docker
+bun run publish:packages   # build + publish the kit and example packages to verdaccio
+# …work with the explorer…
+bun run registry:down      # stop and wipe the registry
+```
+
+The published decoder is then importable at, e.g., `http://localhost:8080/@tuler/luke-perp-dex-decoder@0.1.0`. Register that URL on the application's **Overview** page in the explorer (or pass it as `?decoder=`) to try the full loop.
 
 On application pages the registered decoder is mirrored into a `?decoder=` query param, so the address bar is a shareable link that carries the decoder along with the node, e.g.:
 
 ```
-https://tuler.github.io/luke/apps/echo-dapp/inputs?server=…&decoder=https://example.com/decoder.js
+http://localhost:5173/apps/perp-dex/inputs?server=…&decoder=http://localhost:8080/@tuler/luke-perp-dex-decoder@0.1.0
 ```
 
 Requirements and caveats:
 
-- The URL must serve a JavaScript ES module with CORS enabled (`Access-Control-Allow-Origin`).
-- When the explorer is served over HTTPS (e.g. GitHub Pages), browsers block `http://` module URLs — use `https://`, or run the explorer locally.
+- The URL must serve a JavaScript ES module with CORS enabled (`Access-Control-Allow-Origin`) — esm.sh does this for you.
+- When the explorer is served over HTTPS (e.g. GitHub Pages), browsers block `http://` module URLs — use an HTTPS-hosted decoder, or run the explorer locally.
 - **A decoder runs with full access to the explorer page. Only register URLs you trust.** Unlike `?server=`, a decoder suggested by a shared link is never adopted silently — a banner asks for confirmation first.

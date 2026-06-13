@@ -1,6 +1,7 @@
 // Payload decoder for the perp-dex application, written in TypeScript against
-// the decoder-kit. Build it to an ES module and host it (see decoder-kit/README.md);
-// the mock server bundles and serves this file at /perp-dex-decoder.js.
+// the @tuler/luke-decoder kit. Built to an ES module and published to the local
+// registry (see ../../infra and the repo README); esm.sh serves it for the
+// explorer to import at runtime.
 //
 // Dispatch mirrors the backend (src/input-decoder.hpp):
 //
@@ -29,7 +30,7 @@ import {
   isHex,
   type Decoder,
   type DecodeResult,
-} from '../decoder-kit'
+} from '@tuler/luke-decoder'
 
 export const version = 1
 export const name = 'Perp DEX decoder'

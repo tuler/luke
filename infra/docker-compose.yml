@@ -1,0 +1,38 @@
+# Local package infrastructure for decoders:
+#   • verdaccio — private npm registry the decoder packages are published to
+#   • esm.sh    — serves those packages to the explorer as browser ES modules
+#
+#   bun run registry:up     # start both
+#   bun run publish:packages # build + publish the decoder packages
+#   bun run registry:down    # stop and wipe
+#
+# The explorer then loads, e.g., http://localhost:8080/@tuler/luke-perp-dex-decoder
+
+services:
+  verdaccio:
+    image: verdaccio/verdaccio:6
+    ports:
+      - '4873:4873'
+    volumes:
+      - ./verdaccio/config.yaml:/verdaccio/conf/config.yaml:ro
+      - verdaccio_storage:/verdaccio/storage
+    healthcheck:
+      test: ['CMD', 'wget', '--spider', '-q', 'http://127.0.0.1:4873/-/ping']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  esm:
+    image: ghcr.io/esm-dev/esm.sh:latest
+    ports:
+      - '8080:80'
+    environment:
+      # Resolve every package (including @tuler/luke-*) from verdaccio, which
+      # proxies npmjs for anything not published locally.
+      NPM_REGISTRY: 'http://verdaccio:4873/'
+    depends_on:
+      verdaccio:
+        condition: service_healthy
+
+volumes:
+  verdaccio_storage:

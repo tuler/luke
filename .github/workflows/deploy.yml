@@ -26,10 +26,10 @@ jobs:
           BASE_PATH: /${{ github.event.repository.name }}/
       # GitHub Pages has no SPA rewrites; serving the app as the 404 page
       # lets deep links (e.g. /apps/<name>/epochs/3) load the router.
-      - run: cp dist/index.html dist/404.html
+      - run: cp packages/webapp/dist/index.html packages/webapp/dist/404.html
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: packages/webapp/dist
 
   deploy:
     needs: build

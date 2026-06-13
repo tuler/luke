@@ -1,0 +1,20 @@
+{
+  "name": "@tuler/luke-json-decoder",
+  "version": "0.1.0",
+  "description": "Example Cartesi Node Explorer decoder for plain-JSON payloads",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "publishConfig": {
+    "registry": "http://localhost:4873/",
+    "access": "public"
+  },
+  "scripts": {
+    "build": "rm -rf dist && mkdir -p dist && cp index.js dist/index.js && bun ../../infra/prepare-dist.ts"
+  }
+}

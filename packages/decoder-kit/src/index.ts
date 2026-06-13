@@ -1,8 +1,8 @@
-// Decoder Kit — the typed toolkit for writing Cartesi Node Explorer payload
-// decoders in TypeScript.
+// @tuler/luke-decoder — the typed toolkit for writing Cartesi Node Explorer
+// payload decoders in TypeScript.
 //
-//   import type { Decoder } from 'decoder-kit'
-//   import { decodePortalInput, ByteReader, formatUnits } from 'decoder-kit'
+//   import type { Decoder } from '@tuler/luke-decoder'
+//   import { decodePortalInput, ByteReader, formatUnits } from '@tuler/luke-decoder'
 //
 //   export const version = 1
 //   export const name = 'My decoder'
