@@ -15,7 +15,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@tuler/luke-decoder": "workspace:*"
+    "@tuler/luke-decoder": "workspace:*",
+    "viem": "^2.52.2"
   },
   "scripts": {
     "build": "rm -rf dist && bun build src/index.ts --target=browser --format=esm --external @tuler/luke-decoder --outdir dist && bun ../../infra/prepare-dist.ts"
