@@ -27,8 +27,19 @@ function splitRefAndPath(rest: string): { ref: string; path: string } | null {
   return m ? { ref: m[1], path: m[2] } : null
 }
 
+// The kit is provided by the explorer through an import map (see vite.config.ts),
+// so esm.sh is told to leave the bare `@tuler/luke-decoder` import alone rather
+// than resolve it from npm. That import map points it at the kit's own GitHub
+// source — which is what lets a kit-using decoder load from a repo with nothing
+// published to a registry.
+const KIT_SPECIFIER = '@tuler/luke-decoder'
+
+function withKitExternal(url: string): string {
+  return `${url}${url.includes('?') ? '&' : '?'}external=${KIT_SPECIFIER}`
+}
+
 function ghUrl(base: string, owner: string, repo: string, ref: string, path: string): string {
-  return `${base}/gh/${owner}/${repo}@${ref}/${path.replace(/^\/+/, '')}`
+  return withKitExternal(`${base}/gh/${owner}/${repo}@${ref}/${path.replace(/^\/+/, '')}`)
 }
 
 /**
@@ -52,7 +63,7 @@ export function resolveDecoderImportUrl(input: string, esmBase: string = ESM_BAS
   // Shorthand — already esm.sh's own gh syntax (owner/repo@ref/path), just
   // needs the host prepended.
   const short = /^(?:gh|github):\/*(.+)$/i.exec(ref)
-  if (short) return `${esmBase}/gh/${short[1].replace(/^\/+/, '')}`
+  if (short) return withKitExternal(`${esmBase}/gh/${short[1].replace(/^\/+/, '')}`)
 
   let url: URL
   try {

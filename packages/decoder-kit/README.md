@@ -33,7 +33,7 @@ Return `null`/`undefined` (or throw) when a payload isn't recognized — the exp
 
 ## Loading from GitHub source (no publish)
 
-The simplest way to share a decoder is to skip packaging and point the explorer at its TypeScript source on GitHub — register the file's `github.com` URL or a `gh:owner/repo@ref/path.ts` shorthand on the application's **Overview** page. The explorer routes it through [esm.sh](https://esm.sh), which transpiles the source and resolves this kit on the fly. The repo must be public; for a kit-based decoder to work against the deployed explorer (public `https://esm.sh`), this kit must be on **public npm** (`npm publish` from `dist/`, see below) — locally, verdaccio is enough. See the [explorer README](../../README.md#from-a-github-source-no-publish) for details.
+The simplest way to share a decoder is to skip packaging and point the explorer at its TypeScript source on GitHub — register the file's `github.com` URL or a `gh:owner/repo@ref/path.ts` shorthand on the application's **Overview** page. The explorer routes it through [esm.sh](https://esm.sh), which transpiles the source on the fly. The decoder's `import … from '@tuler/luke-decoder'` needs **nothing published**: the explorer supplies this kit via an import map pointing at its own GitHub source (see the [explorer README](../../README.md#from-a-github-source-no-publish)), so kit-using decoders work even in production over public esm.sh. The repo must be public.
 
 ## Building, publishing and serving
 

@@ -138,7 +138,8 @@ The esm.sh used for this defaults to the local self-hosted one (`http://localhos
 
 - The repo (and the file) must be **public** — esm.sh fetches it anonymously.
 - Pin a tag or commit (`@v0.1.0`, `@<sha>`) instead of a branch for a stable, reproducible reference.
-- A decoder that imports `@tuler/luke-decoder` needs the kit available on the registry esm.sh resolves from: the local verdaccio in development (after `publish:packages`), or **public npm** for the deployed explorer over `https://esm.sh` — see [the kit README](packages/decoder-kit/README.md#building-publishing-and-serving). Decoders with no kit dependency (plain JS, or self-contained) work over public esm.sh immediately.
+- A decoder's `@tuler/luke-decoder` import needs **nothing published to a registry**. The explorer tells esm.sh to leave that import external (`?external=@tuler/luke-decoder`) and supplies the kit through an [import map](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/importmap) that points at the kit's own GitHub source on esm.sh — so a kit-using decoder loads in production (public `https://esm.sh`) with no npm publish. The kit source is configurable via `VITE_KIT_URL` (default `<esm base>/gh/tuler/luke@main/packages/decoder-kit/src/index.ts`; see [vite.config.ts](packages/webapp/vite.config.ts)).
+- To develop a GitHub-hosted decoder with **no local registry at all**, point the explorer at public esm.sh — `VITE_ESM_BASE=https://esm.sh bun run dev` — and skip `registry:up`/`publish:packages` entirely; the kit resolves through the import map from GitHub, exactly as in production. (The default local dev loop with the pinned esm.sh resolves the kit from verdaccio after `publish:packages` instead.)
 
 ### Publishing and serving decoders locally
 
