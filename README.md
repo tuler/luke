@@ -73,7 +73,7 @@ bun --filter @tuler/luke-webapp preview
 
 ## Payload decoders
 
-Input, output and report payloads are application-specific byte arrays — opaque to the node, and therefore to the explorer, which by default shows them as hex (or UTF-8 when they happen to be text). To make them readable, you can plug in a decoder: an ES module, hosted anywhere, registered per application on the app's **Overview** page. The explorer imports it at runtime — no rebuild needed — and uses it for that application's payload views and table previews, with the raw hex/UTF-8 views still available as toggles. Decoders are stored in localStorage, keyed by application address.
+Input, output and report payloads are application-specific byte arrays — opaque to the node, and therefore to the explorer, which by default shows them as hex (or UTF-8 when they happen to be text). To make them readable, you can plug in a decoder: an ES module — or a TypeScript source file on GitHub (see [From a GitHub source](#from-a-github-source-no-publish)) — registered per application on the app's **Overview** page. The explorer imports it at runtime — no rebuild needed — and uses it for that application's payload views and table previews, with the raw hex/UTF-8 views still available as toggles. Decoders are stored in localStorage, keyed by application address.
 
 A decoder module implements this interface (version 1):
 
@@ -118,6 +118,27 @@ export const decode: Decoder['decode'] = (payload, context) => {
 ```
 
 The example decoders live in their own packages: [`packages/json-decoder`](packages/json-decoder) (plain JS) and [`packages/perp-dex-decoder`](packages/perp-dex-decoder) (TypeScript, using the kit). The perp-dex decoder reads the packed binary inputs of the mock `perp-dex` application, dispatching on the input *sender*: inputs from a known Cartesi portal address are asset deposits decoded by the kit's shared `decodePortalInput()`, while everything else is an application message (orders, withdrawals, price feeds) decoded by its leading type byte. See [`packages/decoder-kit/README.md`](packages/decoder-kit/README.md) for the authoring guide.
+
+### From a GitHub source (no publish)
+
+The quickest way to share a decoder is to skip packaging entirely and point the explorer straight at its TypeScript source on GitHub. Register either the file's `github.com` URL (the one in your browser's address bar, or behind the **Raw** button) or a `gh:` shorthand:
+
+```
+https://github.com/owner/repo/blob/main/src/decoder.ts
+gh:owner/repo@main/src/decoder.ts
+```
+
+The explorer rewrites these to the [esm.sh](https://esm.sh) `/gh/` route, which fetches the file from the repo, transpiles the TypeScript, and resolves its `@tuler/luke-decoder` dependency — all on the fly, so there is nothing to build or publish. For example, register this repo's own perp-dex decoder against the mock `perp-dex` application:
+
+```
+https://github.com/tuler/luke/blob/main/packages/perp-dex-decoder/src/index.ts
+```
+
+The esm.sh used for this defaults to the local self-hosted one (`http://localhost:8080`, started by `registry:up`) in development and the public `https://esm.sh` in a production build; set `VITE_ESM_BASE` to override it. Notes:
+
+- The repo (and the file) must be **public** — esm.sh fetches it anonymously.
+- Pin a tag or commit (`@v0.1.0`, `@<sha>`) instead of a branch for a stable, reproducible reference.
+- A decoder that imports `@tuler/luke-decoder` needs the kit available on the registry esm.sh resolves from: the local verdaccio in development (after `publish:packages`), or **public npm** for the deployed explorer over `https://esm.sh` — see [the kit README](packages/decoder-kit/README.md#building-publishing-and-serving). Decoders with no kit dependency (plain JS, or self-contained) work over public esm.sh immediately.
 
 ### Publishing and serving decoders locally
 

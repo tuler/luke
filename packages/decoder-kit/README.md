@@ -31,9 +31,13 @@ Return `null`/`undefined` (or throw) when a payload isn't recognized — the exp
 
 [`../perp-dex-decoder`](../perp-dex-decoder) is a complete worked example package.
 
+## Loading from GitHub source (no publish)
+
+The simplest way to share a decoder is to skip packaging and point the explorer at its TypeScript source on GitHub — register the file's `github.com` URL or a `gh:owner/repo@ref/path.ts` shorthand on the application's **Overview** page. The explorer routes it through [esm.sh](https://esm.sh), which transpiles the source and resolves this kit on the fly. The repo must be public; for a kit-based decoder to work against the deployed explorer (public `https://esm.sh`), this kit must be on **public npm** (`npm publish` from `dist/`, see below) — locally, verdaccio is enough. See the [explorer README](../../README.md#from-a-github-source-no-publish) for details.
+
 ## Building, publishing and serving
 
-Decoders are loaded by the explorer at runtime as **browser ES modules**. In this repo, a decoder package is built (`bun build` bundling the package's own code, keeping `@tuler/luke-decoder` as an external dependency), published to a local [verdaccio](https://verdaccio.org) registry, and served to the browser by a self-hosted [esm.sh](https://esm.sh) — which resolves and bundles the `@tuler/luke-decoder` dependency from the same registry on the fly. From the repo root:
+To distribute a decoder as a versioned package instead, it is built (`bun build` bundling the package's own code, keeping `@tuler/luke-decoder` as an external dependency), published to a registry, and served to the browser by [esm.sh](https://esm.sh) — which resolves and bundles the `@tuler/luke-decoder` dependency from the same registry on the fly. In this repo a local [verdaccio](https://verdaccio.org) + esm.sh pair does this. From the repo root:
 
 ```sh
 bun run registry:up        # start verdaccio + esm.sh

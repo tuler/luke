@@ -23,9 +23,12 @@ services:
       retries: 20
 
   esm:
-    image: ghcr.io/esm-dev/esm.sh:latest
+    # Pinned: the floating :latest arm64 image ships a libz that fails to
+    # relocate on the GitHub-fetch path (`/gh/…`), so serving a decoder straight
+    # from a repo 500s; v136 works. (This image serves on :8080 internally.)
+    image: ghcr.io/esm-dev/esm.sh:v136
     ports:
-      - '8080:80'
+      - '8080:8080'
     environment:
       # Resolve every package (including @tuler/luke-*) from verdaccio, which
       # proxies npmjs for anything not published locally.

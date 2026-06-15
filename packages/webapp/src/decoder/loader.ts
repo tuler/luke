@@ -1,3 +1,4 @@
+import { resolveDecoderImportUrl } from './github'
 import type { DecoderModule } from './types'
 
 // One in-flight or resolved import per URL; failed loads are forgotten so a
@@ -15,9 +16,13 @@ export function loadDecoder(url: string): Promise<DecoderModule> {
 }
 
 async function importDecoder(url: string): Promise<DecoderModule> {
+  // GitHub references are rewritten to the esm.sh /gh/ route, which serves the
+  // decoder's TypeScript source as a browser ES module; any other URL is used
+  // as-is.
+  const importUrl = resolveDecoderImportUrl(url)
   let mod: Record<string, unknown>
   try {
-    mod = (await import(/* @vite-ignore */ url)) as Record<string, unknown>
+    mod = (await import(/* @vite-ignore */ importUrl)) as Record<string, unknown>
   } catch (err) {
     throw new Error(
       'Failed to load the module — check that the URL serves an ES module and allows CORS.' +

@@ -24,8 +24,11 @@ export function DecoderSettings({ application }: { application: string }) {
     <Section title="Payload decoder">
       <div className="space-y-2">
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          An ES module that translates this application's payloads into readable data. It runs
-          with full access to this page — only add URLs you trust.
+          A module that translates this application's payloads into readable data — a built ES
+          module URL, or a decoder's TypeScript source on GitHub (paste the file's{' '}
+          <code className="font-mono">github.com</code> URL, or use{' '}
+          <code className="font-mono">gh:owner/repo@ref/path.ts</code>). It runs with full access
+          to this page — only add sources you trust.
         </p>
         <form
           className="flex flex-wrap items-center gap-2"
@@ -38,7 +41,7 @@ export function DecoderSettings({ application }: { application: string }) {
             type="url"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
-            placeholder="https://example.com/decoder.js"
+            placeholder="https://github.com/owner/repo/blob/main/decoder.ts"
             className={`${filterInputClass} min-w-0 flex-1`}
           />
           <button
